@@ -5,18 +5,21 @@ import axios from 'axios';
 import { doSomething } from '../screens/ResultScreen';
 
 
+import { itemList } from '../screens/ResultScreen';
+
 const TwitchCalendar = () => {
   const [streamEvents, setStreamEvents] = useState([]);
+  
 
-console.log(doSomething);
+  //console.log(itemList+"API")
 
   useEffect(() => {
     // Funktion zum Abrufen der Stream-Zeiten
     const getStreamTimes = async () => {
       try {
-        const clientId = 'DEINE_CLIENT_ID';
-        const followedStreamers = ['STREAMER1', 'STREAMER2', 'STREAMER3'];
-
+        const clientId = 'cy62mju0oppuucish4wagv05gras6y';
+        const followedStreamers = itemList;
+       
         // Abrufen eines OAuth-Zugriffstokens (optional)
         const accessTokenResponse = await axios.post(
           'https://id.twitch.tv/oauth2/token',
@@ -24,7 +27,7 @@ console.log(doSomething);
           {
             params: {
               client_id: clientId,
-              client_secret: 'DEIN_CLIENT_SECRET',
+              client_secret: '5uor3qihm10ujysix0fy38rg83ohn6',
               grant_type: 'client_credentials',
             },
           }
@@ -70,6 +73,7 @@ console.log(doSomething);
               startDate: startDate,
               endDate: endDate,
             });
+            console.log(startDate+streamerName)
           }
         }
 

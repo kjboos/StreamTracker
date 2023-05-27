@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Modal, useWindowDimensions,TextInput,ScrollView } from "react-native";
+import axios from "axios";
 
 
 import Colors from "../constants/Colors";
@@ -10,12 +11,16 @@ import DefaultText from "../components/DefaultText";
 import ToDoItem from "../components/ToDoItem";
 
 
+export const itemList = [];
+
 export default ResultScreen = (props) => {
   const { height } = useWindowDimensions();
 
   const [searchText, setSearchText] = useState(""); // Zustandsvariable für die Sucheingabe
 
   const [items, setItems] = useState([]); // Zustandsvariable für die ToDo-Items
+
+  const [streamers, setStreamers] = useState([]);
 
 
 
@@ -27,21 +32,28 @@ export default ResultScreen = (props) => {
 
   const handleAddItem = () => {
     if (searchText.trim() !== "") {
-      setItems((prevItems) => [
-        ...prevItems,
-        { id: Math.random().toString(), title: searchText },
-      ]);
+      const newItem = { id: Math.random().toString(), title: searchText };
+      setItems((prevItems) => [...prevItems, newItem]);
       setSearchText("");
+      itemList.push(newItem.title);
     }
+    console.log(itemList)
   };
-
+ 
   const handleDeleteItem = (itemId) => {
     setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+    itemList.splice(
+      itemList.findIndex((item) => item.id === itemId),
+      1
+    ); // Entferne den Titel aus der itemList
+    console.log(itemList)
   };
   
   function doSomething() {
     items;
   }
+
+  
 
 
   return (
