@@ -10,13 +10,13 @@ import DefaultText from "../components/DefaultText";
 import ToDoItem from "../components/ToDoItem";
 
 
-
 export default ResultScreen = (props) => {
   const { height } = useWindowDimensions();
 
   const [searchText, setSearchText] = useState(""); // Zustandsvariable für die Sucheingabe
 
   const [items, setItems] = useState([]); // Zustandsvariable für die ToDo-Items
+
 
 
   const handleSearch = () => {
@@ -38,7 +38,10 @@ export default ResultScreen = (props) => {
   const handleDeleteItem = (itemId) => {
     setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
   };
-
+  
+  function doSomething() {
+    items;
+  }
 
 
   return (
@@ -48,7 +51,7 @@ export default ResultScreen = (props) => {
       supportedOrientations={["portrait", "landscape"]}
     >
       <View
-        style={height > 660 ? styles.screenVertical : styles.screenHorizontal}
+        style={height > 500 ? styles.screenVertical : styles.screenHorizontal}
       >
         <View style={LayoutStyles.topContainer}>
           <DefaultText style={styles.resultTitleText}>
@@ -63,6 +66,7 @@ export default ResultScreen = (props) => {
               value={searchText} // Setze den Wert des Eingabefelds auf die Eingabevariablen
             />
             <BgButton title="Search" onClick={handleAddItem} /> 
+  
           </View>
 
         </View>
@@ -84,16 +88,21 @@ export default ResultScreen = (props) => {
                 onDelete={() => handleDeleteItem(item.id)}
               />
             ))}
-    
+     
         </ScrollView>
         </View>
         <View style={[styles.bottomContainer, LayoutStyles.bottomContainer]}>
           <BgButton title={"Back"} onClick={props.onCancelModal} />
         </View>
       </View>
+      
     </Modal>
+  
   );
 };
+
+
+
 
 const styles = StyleSheet.create({
 

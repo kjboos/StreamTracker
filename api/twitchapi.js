@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import axios from 'axios';
+import { doSomething } from '../screens/ResultScreen';
+
 
 const TwitchCalendar = () => {
   const [streamEvents, setStreamEvents] = useState([]);
+
+console.log(doSomething);
 
   useEffect(() => {
     // Funktion zum Abrufen der Stream-Zeiten
