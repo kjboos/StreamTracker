@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Modal, useWindowDimensions,TextInput,ScrollView } from "react-native";
 import axios from "axios";
+import { SearchBar } from "react-native-elements";
 
 
 import Colors from "../constants/Colors";
@@ -48,12 +49,7 @@ export default ResultScreen = (props) => {
     ); // Entferne den Titel aus der itemList
     console.log(itemList)
   };
-  
-  function doSomething() {
-    items;
-  }
 
-  
 
 
   return (
@@ -71,11 +67,12 @@ export default ResultScreen = (props) => {
           </DefaultText>
 
           <View style={styles.searchContainer}>
-            <TextInput
-              style={styles.searchInput}
+          <SearchBar
               placeholder="Enter streamer name"
-              onChangeText={(text) => setSearchText(text)} // Aktualisiere den Wert der Eingabevariablen
-              value={searchText} // Setze den Wert des Eingabefelds auf die Eingabevariablen
+              onChangeText={(text) => setSearchText(text)}
+              value={searchText}
+              containerStyle={styles.searchBarContainer}
+              inputContainerStyle={styles.searchBarInputContainer}
             />
             <BgButton title="Search" onClick={handleAddItem} /> 
   
@@ -175,7 +172,6 @@ const styles = StyleSheet.create({
   },
 
   resultTitleText: {
-    //addingTop: 20,
     fontSize: 35,
   },
 
@@ -190,9 +186,20 @@ const styles = StyleSheet.create({
   summaryText: {
     marginTop: 15,
     fontSize: 30,
-    //textAlign: 'justify',
-    //justifyContent: 'center',
     textAlign: "center",
-    //width: "120%",
+
   },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchBarContainer: {
+    flex: 1,
+    backgroundColor: "transparent",
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
+  },
+  searchBarInputContainer: {
+    backgroundColor: Colors.primary,
+  }
 });
