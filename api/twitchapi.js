@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Modal, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import axios from 'axios';
-import { doSomething } from '../screens/ResultScreen';
 
 
 import { itemList } from '../screens/ResultScreen';
 
 const TwitchCalendar = () => {
   const [streamEvents, setStreamEvents] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   
 
   //console.log(itemList+"API")
@@ -105,12 +106,58 @@ const TwitchCalendar = () => {
 
     return calendarEvents;
   };
+  const markedDates = {
+    '2023-06-01': { marked: true ,customInfo: 'Info für den 1. Juni'},
+    '2023-06-05': { marked: true ,customInfo: 'Info für den 2. Juni'},
+    '2023-06-10': { marked: true ,customInfo: 'Info für den 3. Juni'},
+  };
+
+  const handleDayPress = (date) => {
+    setSelectedDate(date);
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
 
   return (
     <View>
-      <Calendar markedDates={renderCalendarEvents()} />
-    </View>
-  );
+    <Calendar markedDates={markedDates} onDayPress={handleDayPress} />
+
+    <Modal visible={modalVisible} animationType="slide">
+      <View style={styles.modalContainer}>
+        <TouchableOpacity onPress={handleCloseModal}>
+          <Text style={styles.closeButton}>Schließen</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.customInfoText}>
+          {markedDates[selectedDate]?.customInfo}
+        </Text>
+      </View>
+    </Modal>
+  </View>
+);
 };
 
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  closeButton: {
+    fontSize: 18,
+    color: 'white',
+    marginBottom: 10,
+  },
+  customInfoText: {
+    fontSize: 24,
+    color: 'red',
+    textAlign: 'center',
+  },
+});
+
 export default TwitchCalendar;
+
