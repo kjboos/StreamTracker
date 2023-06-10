@@ -7,12 +7,100 @@ import { itemList } from "../screens/ResultScreen";
 
 const TwitchCalendar = () => {
   const [streamEvents, setStreamEvents] = useState([]);
+  const [scheduleData, setScheduleData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   //console.log(itemList+"API")
 
   useEffect(() => {
+
+  
+
+    const fetchScheduleData = async () => {
+      try {
+        const clientId = "cy62mju0oppuucish4wagv05gras6y";
+        const followedStreamers = itemList;
+    
+        // Abrufen eines OAuth-Zugriffstokens (optional)
+        const accessTokenResponse = await axios.post(
+          "https://id.twitch.tv/oauth2/token",
+          null,
+          {
+            params: {
+              client_id: clientId,
+              client_secret: "5uor3qihm10ujysix0fy38rg83ohn6",
+              grant_type: "client_credentials",
+            },
+          }
+        );
+    
+        const accessToken = accessTokenResponse.data.access_token;
+    
+        // Abrufen der geplanten Stream-Zeiten für gefolgten Streamer
+        const scheduleData = [];
+    
+        for (const streamerName of followedStreamers) {
+          const userDataResponse = await axios.get(
+            `https://api.twitch.tv/helix/users?login=${streamerName}`,
+            {
+              headers: {
+                "Client-ID": clientId,
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+    
+          const userId = userDataResponse.data.data[0].id;
+    
+          const scheduleResponse = await axios.get(
+            `https://api.twitch.tv/helix/schedule?broadcaster_id=${userId}`,
+            {
+              headers: {
+                "Client-ID": clientId,
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+    
+          const scheduleDataResponse = scheduleResponse.data.data;
+
+          console.log(scheduleDataResponse)
+          console.log(typeof scheduleDataResponse);
+    
+          if (typeof scheduleDataResponse === "object") {
+            const startDate = new Date(scheduleDataResponse.segments[0].start_time);
+            //const endDate = new Date(scheduleDataResponse.segment.end_time);
+            console.log(startDate)
+            scheduleData.push({
+              streamerName: streamerName,
+              startDate: startDate,
+             // endDate: endDate,
+              scheduleData: scheduleDataResponse,
+            });
+          }
+        }
+    
+        setScheduleData(scheduleData);
+      } catch (error) {
+        console.log("Fehler beim Abrufen der Schedule-Daten:", error);
+      }
+    };
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+
+
     // Funktion zum Abrufen der Stream-Zeiten
     const fetchStreamTimes = async () => {
       try {
@@ -49,18 +137,6 @@ const TwitchCalendar = () => {
           );
 
           const userId = userDataResponse.data.data[0].id;
- // Abrufen der geplanten Stream-Zeiten
-/* const scheduleResponse = await axios.get(
-  `https://api.twitch.tv/helix/schedule?broadcaster_id=${userId}`,
-  {
-    headers: {
-      "Client-ID": clientId,
-      Authorization: `Bearer ${accessToken}`,
-    },
-  }
-);*/
-
-       //   const scheduleData = scheduleResponse.data.data;
 
       
 
@@ -101,8 +177,8 @@ const TwitchCalendar = () => {
     };
 
     // Definiere eine Funktion zum initialen Abrufen der Stream-Zeiten
-    const initialFetchStreamTimes = () => {
-      fetchStreamTimes();
+    const initialFetchStreamTimes = async () => {
+      await Promise.all([fetchStreamTimes(), fetchScheduleData()]);
     };
 
     // Führe den initialen API-Aufruf aus
