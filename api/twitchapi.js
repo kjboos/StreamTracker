@@ -5,24 +5,20 @@ import axios from "axios";
 
 import { itemList } from "../screens/ResultScreen";
 
-const TwitchCalendar = () => {
-  const [streamEvents, setStreamEvents] = useState([]);
-  const [scheduleData, setScheduleData] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  //console.log(itemList+"API")
+const TwitchKalender = () => {
+  const [streamEvents, setStreamEvents] = useState([]); // Zustand für Stream-Ereignisse
+  const [scheduleData, setScheduleData] = useState([]); // Zustand für geplante Stream-Zeiten
+  const [selectedDate, setSelectedDate] = useState(null); // Zustand für ausgewähltes Datum
+  const [modalVisible, setModalVisible] = useState(false); // Zustand für Sichtbarkeit des Modals
 
   useEffect(() => {
-
-  
-
+    // Funktion zum Abrufen der geplanten Stream-Zeiten
     const fetchScheduleData = async () => {
       try {
         const clientId = "cy62mju0oppuucish4wagv05gras6y";
         const followedStreamers = itemList;
-    
-        // Abrufen eines OAuth-Zugriffstokens (optional)
+
+        // Access Token vom Twitch API erhalten
         const accessTokenResponse = await axios.post(
           "https://id.twitch.tv/oauth2/token",
           null,
@@ -34,13 +30,14 @@ const TwitchCalendar = () => {
             },
           }
         );
-    
+
         const accessToken = accessTokenResponse.data.access_token;
-    
-        // Abrufen der geplanten Stream-Zeiten für gefolgten Streamer
+
         const scheduleData = [];
-    
+
+        // Schleife über alle abonnierten Streamer
         for (const streamerName of followedStreamers) {
+          // Benutzerdaten des Streamers abrufen
           const userDataResponse = await axios.get(
             `https://api.twitch.tv/helix/users?login=${streamerName}`,
             {
@@ -50,9 +47,10 @@ const TwitchCalendar = () => {
               },
             }
           );
-    
+
           const userId = userDataResponse.data.data[0].id;
-    
+
+          // Stream-Zeiten des Streamers abrufen
           const scheduleResponse = await axios.get(
             `https://api.twitch.tv/helix/schedule?broadcaster_id=${userId}`,
             {
@@ -62,52 +60,34 @@ const TwitchCalendar = () => {
               },
             }
           );
-    
+
           const scheduleDataResponse = scheduleResponse.data.data;
 
-          console.log(scheduleDataResponse)
-          console.log(typeof scheduleDataResponse);
-    
+          // Wenn Stream-Zeiten vorhanden sind, werden sie zum scheduleData-Array hinzugefügt
           if (typeof scheduleDataResponse === "object") {
             const startDate = new Date(scheduleDataResponse.segments[0].start_time);
-            //const endDate = new Date(scheduleDataResponse.segment.end_time);
-            console.log(startDate)
+
             scheduleData.push({
               streamerName: streamerName,
               startDate: startDate,
-             // endDate: endDate,
               scheduleData: scheduleDataResponse,
             });
           }
         }
-    
+
         setScheduleData(scheduleData);
       } catch (error) {
         console.log("Fehler beim Abrufen der Schedule-Daten:", error);
       }
     };
 
-
-
-    ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////
-
-
-    // Funktion zum Abrufen der Stream-Zeiten
+    // Funktion zum Abrufen der aktuellen Stream-Zeiten
     const fetchStreamTimes = async () => {
       try {
         const clientId = "cy62mju0oppuucish4wagv05gras6y";
         const followedStreamers = itemList;
 
-        // Abrufen eines OAuth-Zugriffstokens (optional)
+        // Access Token vom Twitch API erhalten
         const accessTokenResponse = await axios.post(
           "https://id.twitch.tv/oauth2/token",
           null,
@@ -122,10 +102,11 @@ const TwitchCalendar = () => {
 
         const accessToken = accessTokenResponse.data.access_token;
 
-        // Abrufen der Stream-Zeiten fÃ¼r gefolgten Streamer
         const streamEventsData = [];
 
+        // Schleife über alle abonnierten Streamer
         for (const streamerName of followedStreamers) {
+          // Benutzerdaten des Streamers abrufen
           const userDataResponse = await axios.get(
             `https://api.twitch.tv/helix/users?login=${streamerName}`,
             {
@@ -138,8 +119,7 @@ const TwitchCalendar = () => {
 
           const userId = userDataResponse.data.data[0].id;
 
-      
-
+          // Aktuelle Stream-Daten des Streamers abrufen
           const streamDataResponse = await axios.get(
             `https://api.twitch.tv/helix/streams?user_id=${userId}`,
             {
@@ -151,22 +131,16 @@ const TwitchCalendar = () => {
           );
 
           const streamData = streamDataResponse.data.data[0];
-          
 
-
+          // Wenn ein Stream stattfindet, wird er zum streamEvents-Array hinzugefügt
           if (streamData) {
             const startDate = new Date(streamData.started_at);
-            const endDate = new Date(streamData.started_at);
-            endDate.setHours(endDate.getHours() + 1);
 
             streamEventsData.push({
               streamerName: streamerName,
               startDate: startDate,
-              endDate: endDate,
-                streamData: streamData,
-          
+              streamData: streamData,
             });
-            console.log(startDate + streamerName);
           }
         }
 
@@ -176,42 +150,61 @@ const TwitchCalendar = () => {
       }
     };
 
-    // Definiere eine Funktion zum initialen Abrufen der Stream-Zeiten
+    // Funktion zum initialen Abrufen von Stream-Zeiten und geplanten Stream-Zeiten
     const initialFetchStreamTimes = async () => {
       await Promise.all([fetchStreamTimes(), fetchScheduleData()]);
     };
 
-    // Führe den initialen API-Aufruf aus
     initialFetchStreamTimes();
 
-    // Aktualisiere die Stream-Zeiten alle 5 Minuten
-    const interval = setInterval(fetchStreamTimes, 1000);
+    // Interval für regelmäßiges Aktualisieren der Stream-Zeiten
+    const interval = setInterval(initialFetchStreamTimes, 1000);
 
-    // Bereinige das Intervall, wenn die Komponente unmountet wird
     return () => clearInterval(interval);
   }, []);
 
-
   const markedDates = {};
 
+  // Markierte Daten für den Kalender generieren
   for (const event of streamEvents) {
     const dateString = event.startDate.toISOString().split("T")[0];
-    const customInfo = `Streamer: ${
-      event.streamerName
-    }\nStartzeit: ${event.startDate.toLocaleTimeString()}\nEndzeit: ${event.endDate.toLocaleTimeString()}`;
+    const customInfo = `Streamer: ${event.streamerName}\nStreamt seit: ${event.startDate.toLocaleTimeString()}\n`;
 
-    markedDates[dateString] = {
-      marked: true,
-      customInfo: customInfo,
-    };
+    if (!markedDates[dateString]) {
+      markedDates[dateString] = {
+        marked: true,
+        customInfo: [customInfo],
+      };
+    } else {
+      markedDates[dateString].customInfo.push(customInfo);
+    }
   }
+
+  // Funktion zum Behandeln des Klicks auf einen Tag im Kalender
   const handleDayPress = (date) => {
     setSelectedDate(date.dateString);
     setModalVisible(true);
   };
 
+  // Funktion zum Schließen des Modals
   const handleCloseModal = () => {
     setModalVisible(false);
+  };
+
+  // Funktion zum Rendern der geplanten Stream-Zeiten
+  const renderScheduleData = () => {
+    if (scheduleData.length === 0) {
+      return <Text>Keine geplanten Stream-Zeiten</Text>;
+    }
+
+    return scheduleData.map((data) => (
+      <View key={data.startDate.getTime()} style={styles.scheduleItem}>
+        <Text style={styles.streamerName}>{data.streamerName}</Text>
+        <Text style={styles.scheduleTime}>
+          {data.startDate.toLocaleTimeString()}
+        </Text>
+      </View>
+    ));
   };
 
   return (
@@ -225,8 +218,13 @@ const TwitchCalendar = () => {
           </TouchableOpacity>
 
           <Text style={styles.customInfoText}>
-            {markedDates[selectedDate]?.customInfo}
+            {markedDates[selectedDate]?.customInfo.map((info, index) => (
+              <Text key={index}>{info}</Text>
+            ))}
           </Text>
+
+          <Text style={styles.sectionTitle}>Geplante Stream-Zeiten:</Text>
+          {renderScheduleData()}
         </View>
       </Modal>
     </View>
@@ -252,4 +250,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TwitchCalendar;
+export default TwitchKalender;
