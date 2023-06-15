@@ -1,43 +1,52 @@
+// Importing required dependencies
 import React, { useEffect, useState } from "react";
-import { View, Modal, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Calendar } from "react-native-calendars";
+import { View, Modal, Text, TouchableOpacity, StyleSheet, ScrollView,Button } from "react-native";
+import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import axios from "axios";
 
 import { itemList } from "../screens/ResultScreen";
 
+// TwitchKalender component
 const TwitchKalender = () => {
-  const [streamEvents, setStreamEvents] = useState([]); // Zustand für Stream-Ereignisse
-  const [scheduleData, setScheduleData] = useState([]); // Zustand für geplante Stream-Zeiten
-  const [selectedDate, setSelectedDate] = useState(null); // Zustand für ausgewähltes Datum
-  const [modalVisible, setModalVisible] = useState(false); // Zustand für Sichtbarkeit des Modals
+  // State variables
+  const [streamEvents, setStreamEvents] = useState([]);
+  const [scheduleData, setScheduleData] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [markedDates, setMarkedDates] = useState({});
+  const [modalVisible, setModalVisible] = useState(false);
 
+  // useEffect hook to fetch data
   useEffect(() => {
-    // Funktion zum Abrufen der geplanten Stream-Zeiten
-    const fetchScheduleData = async () => {
-      try {
-        const clientId = "cy62mju0oppuucish4wagv05gras6y";
-        const followedStreamers = itemList;
+    // Twitch API credentials
+    const clientId = "cy62mju0oppuucish4wagv05gras6y";
+    const clientSecret = "k4l3n4qf1ux34elbvxzw80uokt7070";
+    const followedStreamers = itemList;
 
-        // Access Token vom Twitch API erhalten
-        const accessTokenResponse = await axios.post(
+    // Function to fetch access token
+    const fetchAccessToken = async () => {
+      try {
+        const response = await axios.post(
           "https://id.twitch.tv/oauth2/token",
           null,
           {
             params: {
               client_id: clientId,
-              client_secret: "5uor3qihm10ujysix0fy38rg83ohn6",
+              client_secret: clientSecret,
               grant_type: "client_credentials",
             },
           }
         );
+        return response.data.access_token;
+      } catch (error) {
+        console.log("Fehler beim Abrufen des Access Tokens:", error);
+      }
+    };
 
-        const accessToken = accessTokenResponse.data.access_token;
-
+    const fetchScheduleData = async (accessToken) => {
+      try {
         const scheduleData = [];
-
-        // Schleife über alle abonnierten Streamer
+    
         for (const streamerName of followedStreamers) {
-          // Benutzerdaten des Streamers abrufen
           const userDataResponse = await axios.get(
             `https://api.twitch.tv/helix/users?login=${streamerName}`,
             {
@@ -47,10 +56,9 @@ const TwitchKalender = () => {
               },
             }
           );
-
+    
           const userId = userDataResponse.data.data[0].id;
-
-          // Stream-Zeiten des Streamers abrufen
+    
           const scheduleResponse = await axios.get(
             `https://api.twitch.tv/helix/schedule?broadcaster_id=${userId}`,
             {
@@ -60,53 +68,65 @@ const TwitchKalender = () => {
               },
             }
           );
-
+    
           const scheduleDataResponse = scheduleResponse.data.data;
-
-          // Wenn Stream-Zeiten vorhanden sind, werden sie zum scheduleData-Array hinzugefügt
+    
           if (typeof scheduleDataResponse === "object") {
-            const startDate = new Date(scheduleDataResponse.segments[0].start_time);
-
+            const segments = scheduleDataResponse.segments.map((segment) => ({
+              id: segment.id,
+              startTime: new Date(segment.start_time),
+              endTime: new Date(segment.end_time),
+              title: segment.title,
+              isRecurring: segment.is_recurring,
+            }));
+    
             scheduleData.push({
               streamerName: streamerName,
-              startDate: startDate,
-              scheduleData: scheduleDataResponse,
+              segments: segments,
             });
           }
         }
-
+    
+        const updatedMarkedDates = {};
+    
+        scheduleData.forEach(({ streamerName, segments }) => {
+          segments.forEach((segment) => {
+            const dateString = segment.startTime.toISOString().split("T")[0];
+            const markedDate = markedDates[dateString];
+    
+            if (markedDate) {
+              if (!markedDate.customInfo.includes(`Streamer: ${streamerName}`)) {
+                markedDate.customInfo.push(`Streamer: ${streamerName}`);
+              }
+            } else {
+              updatedMarkedDates[dateString] = {
+                marked: true,
+                customInfo: [`Streamer: ${streamerName}`],
+              };
+            }
+          });
+        });
+    
+        // Remove marked dates for items that are not in the item list
+        Object.keys(markedDates).forEach((dateString) => {
+          if (!updatedMarkedDates[dateString]) {
+            delete markedDates[dateString];
+          }
+        });
+    
         setScheduleData(scheduleData);
+        setMarkedDates(updatedMarkedDates);
       } catch (error) {
         console.log("Fehler beim Abrufen der Schedule-Daten:", error);
       }
     };
 
-    // Funktion zum Abrufen der aktuellen Stream-Zeiten
-    const fetchStreamTimes = async () => {
+    // Function to fetch stream events
+   /* const fetchStreamEvents = async (accessToken) => {
       try {
-        const clientId = "cy62mju0oppuucish4wagv05gras6y";
-        const followedStreamers = itemList;
-
-        // Access Token vom Twitch API erhalten
-        const accessTokenResponse = await axios.post(
-          "https://id.twitch.tv/oauth2/token",
-          null,
-          {
-            params: {
-              client_id: clientId,
-              client_secret: "5uor3qihm10ujysix0fy38rg83ohn6",
-              grant_type: "client_credentials",
-            },
-          }
-        );
-
-        const accessToken = accessTokenResponse.data.access_token;
-
         const streamEventsData = [];
 
-        // Schleife über alle abonnierten Streamer
         for (const streamerName of followedStreamers) {
-          // Benutzerdaten des Streamers abrufen
           const userDataResponse = await axios.get(
             `https://api.twitch.tv/helix/users?login=${streamerName}`,
             {
@@ -119,7 +139,6 @@ const TwitchKalender = () => {
 
           const userId = userDataResponse.data.data[0].id;
 
-          // Aktuelle Stream-Daten des Streamers abrufen
           const streamDataResponse = await axios.get(
             `https://api.twitch.tv/helix/streams?user_id=${userId}`,
             {
@@ -132,7 +151,6 @@ const TwitchKalender = () => {
 
           const streamData = streamDataResponse.data.data[0];
 
-          // Wenn ein Stream stattfindet, wird er zum streamEvents-Array hinzugefügt
           if (streamData) {
             const startDate = new Date(streamData.started_at);
 
@@ -141,72 +159,110 @@ const TwitchKalender = () => {
               startDate: startDate,
               streamData: streamData,
             });
+
+            // Mark the stream dates on the calendar
+            const dateString = startDate.toISOString().split("T")[0];
+            const markedDate = markedDates[dateString];
+
+            if (markedDate) {
+              if (
+                !markedDate.customInfo.includes(
+                  `Streamt seit: ${startDate.toLocaleTimeString()}`
+                )
+              ) {
+                markedDate.customInfo.push(
+                  `Streamt seit: ${startDate.toLocaleTimeString()}`
+                );
+              }
+            } else {
+              markedDates[dateString] = {
+                marked: true,
+                customInfo: [`Streamt seit: ${startDate.toLocaleTimeString()}`],
+              };
+            }
           }
         }
 
         setStreamEvents(streamEventsData);
+        setMarkedDates({ ...markedDates });
       } catch (error) {
         console.log("Fehler beim Abrufen der Stream-Zeiten:", error);
       }
     };
-
-    // Funktion zum initialen Abrufen von Stream-Zeiten und geplanten Stream-Zeiten
-    const initialFetchStreamTimes = async () => {
-      await Promise.all([fetchStreamTimes(), fetchScheduleData()]);
+*/
+    // Function to fetch data
+    const fetchData = async () => {
+      const accessToken = await fetchAccessToken();
+      await Promise.all([
+      //  fetchStreamEvents(accessToken),
+        fetchScheduleData(accessToken),
+      ]);
     };
 
-    initialFetchStreamTimes();
+    fetchData();
 
-    // Interval für regelmäßiges Aktualisieren der Stream-Zeiten
-    const interval = setInterval(initialFetchStreamTimes, 1000);
+    // Refresh data every second
+    const interval = setInterval(fetchData, 1000);
 
+    // Clean up interval on component unmount
     return () => clearInterval(interval);
   }, []);
 
-  const markedDates = {};
-
-  // Markierte Daten für den Kalender generieren
-  for (const event of streamEvents) {
-    const dateString = event.startDate.toISOString().split("T")[0];
-    const customInfo = `Streamer: ${event.streamerName}\nStreamt seit: ${event.startDate.toLocaleTimeString()}\n`;
-
-    if (!markedDates[dateString]) {
-      markedDates[dateString] = {
-        marked: true,
-        customInfo: [customInfo],
-      };
-    } else {
-      markedDates[dateString].customInfo.push(customInfo);
-    }
-  }
-
-  // Funktion zum Behandeln des Klicks auf einen Tag im Kalender
+  // Event handler for day press on the calendar
   const handleDayPress = (date) => {
     setSelectedDate(date.dateString);
     setModalVisible(true);
   };
 
-  // Funktion zum Schließen des Modals
+  // Event handler for closing the modal
   const handleCloseModal = () => {
     setModalVisible(false);
   };
 
-  // Funktion zum Rendern der geplanten Stream-Zeiten
-  const renderScheduleData = () => {
-    if (scheduleData.length === 0) {
-      return <Text>Keine geplanten Stream-Zeiten</Text>;
-    }
 
-    return scheduleData.map((data) => (
-      <View key={data.startDate.getTime()} style={styles.scheduleItem}>
-        <Text style={styles.streamerName}>{data.streamerName}</Text>
-        <Text style={styles.scheduleTime}>
-          {data.startDate.toLocaleTimeString()}
-        </Text>
-      </View>
-    ));
-  };
+const renderScheduleData = () => {
+  if (scheduleData.length === 0) {
+    return <Text>Keine geplanten Stream-Zeiten</Text>;
+  }
+//Render Data on Modal
+  const selectedScheduleData = scheduleData.filter((data) =>
+    data.segments.some(
+      (segment) =>
+        segment.startTime.toISOString().split("T")[0] === selectedDate
+    )
+  );
 
+  if (selectedScheduleData.length === 0) {
+    return <Text>Keine geplanten Stream-Zeiten an diesem Tag</Text>;
+  }
+
+  return (
+    <ScrollView>
+      {selectedScheduleData.map((data) => (
+        <View key={data.streamerName} style={styles.streamerContainer}>
+          <Text style={styles.streamerName}>{data.streamerName}</Text>
+          {data.segments
+            .filter(
+              (segment) =>
+                segment.startTime.toISOString().split("T")[0] === selectedDate
+            )
+            .map((segment) => (
+              <View key={segment.id} style={styles.scheduleItem}>
+                <Text style={styles.scheduleTitle}>{segment.title}</Text>
+                <Text style={styles.scheduleTime}>
+                  {segment.startTime.toLocaleTimeString()} -{" "}
+                  {segment.endTime.toLocaleTimeString()}
+                </Text>
+              </View>
+            ))}
+        </View>
+      ))}
+      <Button title="Schließen" onPress={handleCloseModal} />
+    </ScrollView>
+  );
+};
+
+  // Render the TwitchKalender component
   return (
     <View>
       <Calendar markedDates={markedDates} onDayPress={handleDayPress} />
@@ -231,6 +287,7 @@ const TwitchKalender = () => {
   );
 };
 
+// Styles for the component
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
