@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   middleContainerHorizontal: {
     backgroundColor: Colors.textColor,
     alignItems: "center",
-    flex: 2,
+    flex: 4,
   },
 
   buttonVerticalContainer: {

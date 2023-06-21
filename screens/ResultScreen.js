@@ -41,13 +41,10 @@ export default ResultScreen = (props) => {
     console.log(itemList)
   };
  
-  const handleDeleteItem = (itemId) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
-    itemList.splice(
-      itemList.findIndex((item) => item.id === itemId),
-      1
-    ); // Entferne den Titel aus der itemList
-    console.log(itemList)
+  const handleDeleteItem = (title) => {
+    setItems((prevItems) => prevItems.filter((item) => item.title !== title));
+    itemList.splice(itemList.findIndex((item) => item === title), 1); // Entferne den Titel aus der itemList
+    console.log(itemList);
   };
 
 
@@ -94,7 +91,7 @@ export default ResultScreen = (props) => {
               <ToDoItem
                 key={item.id}
                 title={item.title}
-                onDelete={() => handleDeleteItem(item.id)}
+                onDelete={() => handleDeleteItem(item.title)}
               />
             ))}
      
