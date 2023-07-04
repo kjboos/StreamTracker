@@ -270,7 +270,31 @@ const TwitchKalender = () => {
   // Render the TwitchKalender component
   return (
     <View>
-      <Calendar markedDates={markedDates} onDayPress={handleDayPress} />
+     <Calendar
+        markedDates={markedDates}
+        onDayPress={handleDayPress}
+        theme={{
+          backgroundColor: "black",
+          calendarBackground: "black",
+          textSectionTitleColor: "white",
+          selectedDayBackgroundColor: "#9147FF",
+          selectedDayTextColor: "white",
+          todayTextColor: "#9147FF",
+          dayTextColor: "white",
+          textDisabledColor: "gray",
+          dotColor: "#9147FF",
+          selectedDotColor: "white",
+          arrowColor: "white",
+          monthTextColor: "white",
+          indicatorColor: "#9147FF",
+          textDayFontFamily: "Arial",
+          textMonthFontFamily: "Arial",
+          textDayHeaderFontFamily: "Arial",
+          textDayFontSize: 16,
+          textMonthFontSize: 20,
+          textDayHeaderFontSize: 14,
+        }}
+      />
 
       <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
