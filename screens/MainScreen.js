@@ -117,6 +117,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.textColor,
     alignItems: "center",
     flex: 4,
+    width: "100%"
+  
   },
 
   buttonVerticalContainer: {
@@ -145,7 +147,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     fontSize: 30,
     color: Colors.primary,
-    fontFamily: "OpenSans-Regular",
+    fontFamily: "Montserrat-Black",
     textAlign: "center",
     width: "50%",
   },

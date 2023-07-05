@@ -13,6 +13,7 @@ export default{
         flex: 4,
         alignItems: 'center',
         padding: 30,
+        width: "100%"
       },
     
           bottomContainer: {

@@ -399,6 +399,7 @@ const styles = StyleSheet.create({
   },
   resultTitleText: {
     fontSize: 35,
+    //fontWeight: "bold",
   },
 });
 
