@@ -11,7 +11,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    "OpenSans-Regular": require("./assets/fonts/OpenSans-Regular.ttf"),
+    "Montserrat-Black": require("./assets/fonts/Montserrat-Black.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {

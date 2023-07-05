@@ -43,6 +43,6 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: Colors.accent,
+    color: Colors.textColor,
   },
 });

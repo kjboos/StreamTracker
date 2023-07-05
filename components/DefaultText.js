@@ -9,8 +9,8 @@ export default DefaultText = (props) => {
 const styles = StyleSheet.create({
   body: {
     fontSize: 30,
-    fontFamily: "OpenSans-Regular",
+    fontFamily: "Montserrat-Black",
     fontWeight: "bold",
-    color: Colors.accent,
+    color: Colors.textColor,
   },
 });
