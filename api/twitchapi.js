@@ -1,28 +1,22 @@
-// Importing required dependencies
 import React, { useEffect, useState } from "react";
-import { View, Modal, Text, TouchableOpacity, StyleSheet, ScrollView,Button } from "react-native";
+import { View, Modal, Text, TouchableOpacity, StyleSheet, ScrollView, Button } from "react-native";
 import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import axios from "axios";
 
 import { itemList } from "../screens/ResultScreen";
 
-// TwitchKalender component
 const TwitchKalender = () => {
-  // State variables
   const [streamEvents, setStreamEvents] = useState([]);
   const [scheduleData, setScheduleData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [markedDates, setMarkedDates] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
 
-  // useEffect hook to fetch data
   useEffect(() => {
-    // Twitch API credentials
     const clientId = "crf1v3ic5vgntpcjf3ieh7sn2cpnt4";
     const clientSecret = "36lirbgnv4z09wg1fe0vrnn86m96g7";
     const followedStreamers = itemList;
 
-    // Function to fetch access token
     const fetchAccessToken = async () => {
       try {
         const response = await axios.post(
@@ -109,9 +103,7 @@ const TwitchKalender = () => {
               };
             }
           });
-        });
-    
-        // Remove marked dates for items that are not in the item list
+               // Remove marked dates for items that are not in the item list
         Object.keys(markedDates).forEach((dateString) => {
           if (!updatedMarkedDates[dateString]) {
             delete markedDates[dateString];
@@ -125,41 +117,34 @@ const TwitchKalender = () => {
       }
     };
     
-    // Function to fetch data
     const fetchData = async () => {
       const accessToken = await fetchAccessToken();
       await Promise.all([
-      //  fetchStreamEvents(accessToken),
         fetchScheduleData(accessToken),
       ]);
     };
 
     fetchData();
 
-    // Refresh data every second
     const interval = setInterval(fetchData, 1000);
 
-    // Clean up interval on component unmount
     return () => clearInterval(interval);
   }, []);
 
-  // Event handler for day press on the calendar
   const handleDayPress = (date) => {
     setSelectedDate(date.dateString);
     setModalVisible(true);
   };
 
-  // Event handler for closing the modal
   const handleCloseModal = () => {
     setModalVisible(false);
   };
-
 
   const renderScheduleData = () => {
     if (scheduleData.length === 0) {
       return <Text>Keine geplanten Stream-Zeiten</Text>;
     }
-  
+
     const selectedScheduleData = scheduleData.filter((data) => {
       const hasScheduledTimes = data.segments.some(
         (segment) =>
@@ -167,11 +152,11 @@ const TwitchKalender = () => {
       );
       return hasScheduledTimes;
     });
-  
+
     if (selectedScheduleData.length === 0) {
       return <Text>Keine geplanten Stream-Zeiten an diesem Tag</Text>;
     }
-  
+
     return (
       <ScrollView>
         {selectedScheduleData.map((data) => (
@@ -198,10 +183,9 @@ const TwitchKalender = () => {
     );
   };
 
-  // Render the TwitchKalender component
   return (
     <View>
-         <Calendar
+      <Calendar
         markedDates={markedDates}
         onDayPress={handleDayPress}
         theme={styles.calendar}
@@ -209,8 +193,6 @@ const TwitchKalender = () => {
 
       <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
-          
-          
           <Text style={styles.sectionTitle}>Geplante Stream-Zeiten:</Text>
           {renderScheduleData()}
         </View>
@@ -219,7 +201,6 @@ const TwitchKalender = () => {
   );
 };
 
-// Styles for the component
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
@@ -238,30 +219,51 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   calendar: {
-    backgroundColor: 'black',
-    calendarBackground: 'black',
-    textSectionTitleColor: 'white',
-    selectedDayBackgroundColor: '#9147FF',
-    selectedDayTextColor: 'white',
-    todayTextColor: '#9147FF',
-    dayTextColor: 'white',
-    textDisabledColor: 'gray',
-    dotColor: '#9147FF',
-    selectedDotColor: 'white',
-    arrowColor: 'white',
-    monthTextColor: 'white',
-    indicatorColor: '#9147FF',
-    textDayFontFamily: 'Montserrat-Black',
-    textMonthFontFamily: 'Montserrat-Black',
-    textDayHeaderFontFamily: 'Montserrat-Black',
+    backgroundColor: "black",
+    calendarBackground: "black",
+    textSectionTitleColor: "white",
+    selectedDayBackgroundColor: "#9147FF",
+    selectedDayTextColor: "white",
+    todayTextColor: "#9147FF",
+    dayTextColor: "white",
+   textDisabledColor: "gray",
+    dotColor: "#9147FF",
+    selectedDotColor: "white",
+    arrowColor: "white",
+    monthTextColor: "white",
+    indicatorColor: "#9147FF",
+    textDayFontFamily: "Montserrat-Black",
+    textMonthFontFamily: "Montserrat-Black",
+    textDayHeaderFontFamily: "Montserrat-Black",
     textDayFontSize: 16,
     textMonthFontSize: 20,
     textDayHeaderFontSize: 14,
   },
+  streamerContainer: {
+    marginBottom: 20,
+  },
+  streamerName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  scheduleItem: {
+    marginBottom: 10,
+  },
+  scheduleTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  scheduleTime: {
+    fontSize: 14,
+    color: "gray",
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
 });
 
-
 export default TwitchKalender;
-
-
-
