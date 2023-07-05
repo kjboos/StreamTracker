@@ -6,6 +6,7 @@ import axios from "axios";
 
 import { itemList } from "../screens/ResultScreen";
 import Colors from "../constants/Colors";
+import BgButton from "../components/BgButton";
 
 // TwitchKalender component
 const TwitchKalender = () => {
@@ -235,7 +236,10 @@ const TwitchKalender = () => {
           
           <Text style={styles.sectionTitle}>Geplante Stream-Zeiten:</Text>
           {renderScheduleData()}
-          <Button title="Schließen" onPress={handleCloseModal} />
+
+          <View style={styles.buttonContainer} >
+           <BgButton title="Schließen" onClick={handleCloseModal} />
+          </View>
         </View>
       </Modal>
     </View>
@@ -255,13 +259,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: Colors.accent,
     flexDirection: "column", // Hinzufügen des flexDirection-Attributs
   },
-  closeButton: {
-    fontSize: 18,
-    color: "white",
-    marginBottom: 30,
+  buttonContainer: {
+    marginBottom: 80,
   },
   customInfoText: {
     fontSize: 24,
@@ -269,19 +271,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   streamerName:{
-    color: Colors.accent,
+    marginTop: 20,
+    color: Colors.textColor,
     fontFamily: "Montserrat-Black",
   },
   scheduleTitle:{
-    color: Colors.accent,
+    color: Colors.textColor,
     fontFamily: "Montserrat-Black",
   },
   scheduleTime:{
-    color: Colors.accent,
+    color: Colors.textColor,
     fontFamily: "Montserrat-Black",
   },
   sectionTitle:{
-    color: Colors.accent,
+    marginTop: 50,
+    color: Colors.textColor,
     fontFamily: "Montserrat-Black",
   }
 });
