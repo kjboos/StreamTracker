@@ -299,16 +299,8 @@ const TwitchKalender = () => {
 
       <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
-          <TouchableOpacity onPress={handleCloseModal}>
-            <Text style={styles.closeButton}>Schließen</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.customInfoText}>
-            {markedDates[selectedDate]?.customInfo.map((info, index) => (
-              <Text key={index}>{info}</Text>
-            ))}
-          </Text>
-
+          
+          
           <Text style={styles.sectionTitle}>Geplante Stream-Zeiten:</Text>
           {renderScheduleData()}
         </View>

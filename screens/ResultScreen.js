@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
 });*/
 
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Modal, useWindowDimensions, TextInput, ScrollView, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Modal, useWindowDimensions, TextInput, ScrollView, TouchableOpacity, Keyboard } from "react-native";
 import axios from "axios";
 import { SearchBar, Text } from "react-native-elements";
 
@@ -300,14 +300,22 @@ const ResultScreen = (props) => {
     }
   };
 
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
   return (
     <Modal
       visible={props.visible}
       animationType="slide"
       supportedOrientations={["portrait", "landscape"]}
     >
-      <View style={height > 500 ? styles.screenVertical : styles.screenHorizontal}>
-        <View style={LayoutStyles.topContainer}>
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={dismissKeyboard}
+        style={styles.container}
+      >
+        <View style={styles.topContainer}>
           <DefaultText style={styles.resultTitleText}>Search Streamer</DefaultText>
           <View style={styles.searchContainer}>
             <SearchBar
@@ -320,6 +328,7 @@ const ResultScreen = (props) => {
             <BgButton title="Add" onClick={handleAddItem} />
           </View>
         </View>
+
         <View style={styles.scrollViewContainer}>
           <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainerStyle}>
             {streamerSuggestions.map((suggestion) => (
@@ -341,15 +350,20 @@ const ResultScreen = (props) => {
             ))}
           </ScrollView>
         </View>
-        <View style={[styles.bottomContainer, LayoutStyles.bottomContainer]}>
+
+        <View style={styles.bottomContainer}>
           <BgButton title={"Back"} onClick={props.onCancelModal} />
         </View>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.accent,
+  },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -371,15 +385,6 @@ const styles = StyleSheet.create({
   scrollView: {
     width: "49%",
   },
-  screenVertical: {
-    flex: 1,
-    backgroundColor: Colors.accent,
-  },
-  screenHorizontal: {
-    flexDirection: "row",
-    flex: 1,
-    backgroundColor: Colors.accent,
-  },
   topContainer: {
     backgroundColor: Colors.accent,
   },
@@ -392,4 +397,5 @@ const styles = StyleSheet.create({
 });
 
 export default ResultScreen;
+
 
