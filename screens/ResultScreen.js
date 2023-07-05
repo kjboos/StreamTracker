@@ -202,9 +202,9 @@ const styles = StyleSheet.create({
 });*/
 
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Modal, useWindowDimensions, TextInput, ScrollView , TouchableOpacity } from "react-native";
+import { View, StyleSheet, Modal, useWindowDimensions, TextInput, ScrollView, TouchableOpacity } from "react-native";
 import axios from "axios";
-import { SearchBar ,Text} from "react-native-elements";
+import { SearchBar, Text } from "react-native-elements";
 
 import Colors from "../constants/Colors";
 import LayoutStyles from "../constants/LayoutStyles";
@@ -222,7 +222,6 @@ const ResultScreen = (props) => {
   const [items, setItems] = useState([]); // Zustandsvariable für die ToDo-Items
   const [streamerSuggestions, setStreamerSuggestions] = useState([]); // Zustandsvariable für die Streamer-Vorschläge
   const [streamers, setStreamers] = useState([]); // Zustandsvariable für die vorgeschlagenen Streamer
-
 
   useEffect(() => {
     if (searchText.trim() !== "") {
@@ -247,12 +246,15 @@ const ResultScreen = (props) => {
         prevStreamers.filter((streamer) => streamer.login !== searchText)
       );
     }
-    console.log(itemList)
+    console.log(itemList);
   };
 
   const handleDeleteItem = (title) => {
     setItems((prevItems) => prevItems.filter((item) => item.title !== title));
-    itemList.splice(itemList.findIndex((item) => item === title), 1); // Entferne den Titel aus der itemList
+    itemList.splice(
+      itemList.findIndex((item) => item === title),
+      1
+    ); // Entferne den Titel aus der itemList
     console.log(itemList);
   };
 
@@ -315,16 +317,10 @@ const ResultScreen = (props) => {
               containerStyle={styles.searchBarContainer}
               inputContainerStyle={styles.searchBarInputContainer}
             />
-            <BgButton title="Search" onClick={handleAddItem} />
+            <BgButton title="Add" onClick={handleAddItem} />
           </View>
         </View>
-        <View
-          style={
-            height > 660
-              ? [LayoutStyles.middleContainer, styles.middleContainer]
-              : [LayoutStyles.middleContainer, styles.middleContainerHorizontal]
-          }
-        >
+        <View style={styles.scrollViewContainer}>
           <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainerStyle}>
             {streamerSuggestions.map((suggestion) => (
               <View key={suggestion}>
@@ -334,19 +330,17 @@ const ResultScreen = (props) => {
               </View>
             ))}
           </ScrollView>
-        </View>
-        <ScrollView
-          style={styles.ScrollView}
-          contentContainerStyle={styles.contentContainerStyle}
-        >
-             {items.map((item) => (
+
+          <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainerStyle}>
+            {items.map((item) => (
               <ToDoItem
                 key={item.id}
                 title={item.title}
                 onDelete={() => handleDeleteItem(item.title)}
               />
             ))}
-            </ScrollView>
+          </ScrollView>
+        </View>
         <View style={[styles.bottomContainer, LayoutStyles.bottomContainer]}>
           <BgButton title={"Back"} onClick={props.onCancelModal} />
         </View>
@@ -367,39 +361,33 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   searchBarInputContainer: {
-    backgroundColor: Colors.primary,
+    backgroundColor: "lightgray",
+  },
+  scrollViewContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 30,
   },
   scrollView: {
-    height: 400,
-    marginTop: 30,
-    width: "100%",
+    width: "49%",
   },
   screenVertical: {
     flex: 1,
-    backgroundColor: Colors.lightBackground,
+    backgroundColor: Colors.accent,
   },
   screenHorizontal: {
     flexDirection: "row",
     flex: 1,
-    backgroundColor: Colors.lightBackground,
+    backgroundColor: Colors.accent,
   },
   topContainer: {
-    backgroundColor: Colors.lightBackground,
-  },
-  middleContainer: {
-    backgroundColor: Colors.textColor,
-  },
-  middleContainerHorizontal: {
-    backgroundColor: Colors.textColor,
-    alignItems: "center",
-    flex: 2,
+    backgroundColor: Colors.accent,
   },
   bottomContainer: {
-    backgroundColor: Colors.textColor,
+    backgroundColor: Colors.accent,
   },
   resultTitleText: {
     fontSize: 35,
-    //fontWeight: "bold",
   },
 });
 

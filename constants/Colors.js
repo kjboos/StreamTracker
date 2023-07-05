@@ -1,6 +1,6 @@
 export default {
-  primary: "#577D86",
-  accent: "#569DAA",
-  textColor: "#87CBB9",
-  lightBackground: "#B9EDDD",
+  primary: "#9147FF",
+  accent: "#9147FF",
+  textColor: "white",
+  lightBackground: "black",
 };

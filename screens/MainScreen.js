@@ -106,11 +106,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lightBackground,
   },
   topContainer: {
-    backgroundColor: Colors.lightBackground,
+    backgroundColor: Colors.accent,
   },
 
   middleContainer: {
-    backgroundColor: Colors.textColor,
+    backgroundColor: Colors.accent,
   },
 
   middleContainerHorizontal: {
@@ -127,10 +127,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 20,
     width: "60%",
+    
+    
+    
   },
 
   bottomContainer: {
-    backgroundColor: Colors.textColor,
+    backgroundColor: Colors.accent,
+    
   },
   slider: {
     width: "100%",
@@ -159,7 +163,9 @@ const styles = StyleSheet.create({
   titleText: {
     paddingTop: 20,
     fontSize: 35,
+    color: Colors.textColor
     //width: '100%'
+  
   },
 
 

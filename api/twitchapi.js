@@ -293,6 +293,7 @@ const TwitchKalender = () => {
           textDayFontSize: 16,
           textMonthFontSize: 20,
           textDayHeaderFontSize: 14,
+          
         }}
       />
 

@@ -11,9 +11,10 @@ export default{
     
          middleContainer: {
         flex: 4,
-        alignItems: 'center',
+        //alignItems: 'center',
         padding: 30,
-        width: "100%"
+        //width: "100%",
+        justifyContent: 'space-evenly'
       },
     
           bottomContainer: {
