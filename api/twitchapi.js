@@ -5,6 +5,7 @@ import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import axios from "axios";
 
 import { itemList } from "../screens/ResultScreen";
+import Colors from "../constants/Colors";
 
 // TwitchKalender component
 const TwitchKalender = () => {
@@ -174,7 +175,7 @@ const TwitchKalender = () => {
     }
   
     return (
-      <ScrollView>
+      <ScrollView style={styles.scrollView}>
         {selectedScheduleData.map((data) => (
           <View key={data.streamerName} style={styles.streamerContainer}>
             <Text style={styles.streamerName}>{data.streamerName}</Text>
@@ -243,16 +244,24 @@ const TwitchKalender = () => {
 
 // Styles for the component
 const styles = StyleSheet.create({
+  scrollViewContainer: {
+    flex: 1,
+    width: "100%",
+    paddingHorizontal: 20,
+    marginTop: 20, // Abstand nach oben anpassen
+    marginBottom: 20, // Abstand nach unten anpassen
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+    flexDirection: "column", // Hinzufügen des flexDirection-Attributs
   },
   closeButton: {
     fontSize: 18,
     color: "white",
-    marginBottom: 10,
+    marginBottom: 30,
   },
   customInfoText: {
     fontSize: 24,
@@ -260,19 +269,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   streamerName:{
-    color: "purple",
+    color: Colors.accent,
     fontFamily: "Montserrat-Black",
   },
   scheduleTitle:{
-    color: "purple",
+    color: Colors.accent,
     fontFamily: "Montserrat-Black",
   },
   scheduleTime:{
-    color: "purple",
+    color: Colors.accent,
     fontFamily: "Montserrat-Black",
   },
   sectionTitle:{
-    color: "purple",
+    color: Colors.accent,
     fontFamily: "Montserrat-Black",
   }
 });

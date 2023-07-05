@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     fontSize: 35,
     color: Colors.textColor
-    //width: '100%'
+  
   
   },
 

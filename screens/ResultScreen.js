@@ -15,6 +15,8 @@ export const itemList = [];
 const ResultScreen = (props) => {
   const { height } = useWindowDimensions();
 
+  const scrollViewHeight = height - 200;
+
   const [searchText, setSearchText] = useState(""); // Zustandsvariable für die Sucheingabe
   const [items, setItems] = useState([]); // Zustandsvariable für die ToDo-Items
   const [streamerSuggestions, setStreamerSuggestions] = useState([]); // Zustandsvariable für die Streamer-Vorschläge
@@ -28,10 +30,7 @@ const ResultScreen = (props) => {
     }
   }, [searchText]);
 
-  const handleSearch = () => {
-    // Implementiere hier die Suchfunktion
-    // Verwende den Wert von searchText für die Suchlogik
-  };
+
 
   const handleAddItem = () => {
     if (searchText.trim() !== "") {
@@ -110,7 +109,7 @@ const ResultScreen = (props) => {
       <TouchableOpacity
         activeOpacity={1}
         onPress={dismissKeyboard}
-        style={styles.container}
+        style={styles.middleContainer}
       >
         <KeyboardAvoidingView
           style={styles.contentContainer}
@@ -126,16 +125,16 @@ const ResultScreen = (props) => {
                 containerStyle={styles.searchBarContainer}
                 inputContainerStyle={styles.searchBarInputContainer}
               />
-              <BgButton title="Add" onClick={handleAddItem} />
+              <BgButton title="Add" onClick={handleAddItem}/>
             </View>
           </View>
 
-          <View style={styles.scrollViewContainer}>
+          <View style={[styles.scrollViewContainer, { height: scrollViewHeight }]}>
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainerStyle}>
               {streamerSuggestions.map((suggestion) => (
                 <View key={suggestion}>
                   <TouchableOpacity onPress={() => setSearchText(suggestion)}>
-                    <Text>{suggestion}</Text>
+                  <DefaultText key={suggestion} style={styles.smallText}>{suggestion}</DefaultText>
                   </TouchableOpacity>
                 </View>
               ))}
@@ -153,7 +152,9 @@ const ResultScreen = (props) => {
           </View>
 
           <View style={styles.bottomContainer}>
+            
             <BgButton title={"Back"} onClick={props.onCancelModal} />
+        
           </View>
         </KeyboardAvoidingView>
       </TouchableOpacity>
@@ -162,22 +163,21 @@ const ResultScreen = (props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.accent,
-  },
   contentContainer: {
     flex: 1,
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
+    marginRight: 5,
+    marginLeft: 5,
   },
   searchBarContainer: {
     flex: 1,
     backgroundColor: "transparent",
     borderTopWidth: 0,
     borderBottomWidth: 0,
+    
   },
   searchBarInputContainer: {
     backgroundColor: "lightgray",
@@ -186,22 +186,36 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 30,
+    marginHorizontal: 10,
   },
   scrollView: {
+    flex: 1,
     width: "49%",
   },
   topContainer: {
     backgroundColor: Colors.accent,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  middleContainer: {
+    flex: 1,
+    backgroundColor: Colors.accent,
+    justifyContent: "center"
   },
   bottomContainer: {
     backgroundColor: Colors.accent,
-    justifyContent: "flex-end",
-    paddingBottom: 20,
+    justifyContent: "center",
+    alignItems: "center", 
+    marginBottom: 30,
   },
   resultTitleText: {
     fontSize: 35,
-    marginTop: 50,
+    marginTop: 80,
+  },
+  smallText: { 
+    fontSize: 13,
   },
 });
 
