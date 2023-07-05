@@ -124,76 +124,7 @@ const TwitchKalender = () => {
         console.log("Fehler beim Abrufen der Schedule-Daten:", error);
       }
     };
-
-   ////////////////////// // Function to fetch stream events
-   /* const fetchStreamEvents = async (accessToken) => {
-      try {
-        const streamEventsData = [];
-
-        for (const streamerName of followedStreamers) {
-          const userDataResponse = await axios.get(
-            `https://api.twitch.tv/helix/users?login=${streamerName}`,
-            {
-              headers: {
-                "Client-ID": clientId,
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          );
-
-          const userId = userDataResponse.data.data[0].id;
-
-          const streamDataResponse = await axios.get(
-            `https://api.twitch.tv/helix/streams?user_id=${userId}`,
-            {
-              headers: {
-                "Client-ID": clientId,
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          );
-
-          const streamData = streamDataResponse.data.data[0];
-
-          if (streamData) {
-            const startDate = new Date(streamData.started_at);
-
-            streamEventsData.push({
-              streamerName: streamerName,
-              startDate: startDate,
-              streamData: streamData,
-            });
-
-            // Mark the stream dates on the calendar
-            const dateString = startDate.toISOString().split("T")[0];
-            const markedDate = markedDates[dateString];
-
-            if (markedDate) {
-              if (
-                !markedDate.customInfo.includes(
-                  `Streamt seit: ${startDate.toLocaleTimeString()}`
-                )
-              ) {
-                markedDate.customInfo.push(
-                  `Streamt seit: ${startDate.toLocaleTimeString()}`
-                );
-              }
-            } else {
-              markedDates[dateString] = {
-                marked: true,
-                customInfo: [`Streamt seit: ${startDate.toLocaleTimeString()}`],
-              };
-            }
-          }
-        }
-
-        setStreamEvents(streamEventsData);
-        setMarkedDates({ ...markedDates });
-      } catch (error) {
-        console.log("Fehler beim Abrufen der Stream-Zeiten:", error);
-      }
-    };
-*////////////////////
+    
     // Function to fetch data
     const fetchData = async () => {
       const accessToken = await fetchAccessToken();
@@ -270,31 +201,10 @@ const TwitchKalender = () => {
   // Render the TwitchKalender component
   return (
     <View>
-     <Calendar
+         <Calendar
         markedDates={markedDates}
         onDayPress={handleDayPress}
-        theme={{
-          backgroundColor: "black",
-          calendarBackground: "black",
-          textSectionTitleColor: "white",
-          selectedDayBackgroundColor: "#9147FF",
-          selectedDayTextColor: "white",
-          todayTextColor: "#9147FF",
-          dayTextColor: "white",
-          textDisabledColor: "gray",
-          dotColor: "#9147FF",
-          selectedDotColor: "white",
-          arrowColor: "white",
-          monthTextColor: "white",
-          indicatorColor: "#9147FF",
-          textDayFontFamily: "Montserrat-Black",
-          textMonthFontFamily: "Montserrat-Black",
-          textDayHeaderFontFamily: "Montserrat-Black",
-          textDayFontSize: 16,
-          textMonthFontSize: 20,
-          textDayHeaderFontSize: 14,
-          
-        }}
+        theme={styles.calendar}
       />
 
       <Modal visible={modalVisible} animationType="slide">
@@ -327,7 +237,29 @@ const styles = StyleSheet.create({
     color: "red",
     textAlign: "center",
   },
+  calendar: {
+    backgroundColor: 'black',
+    calendarBackground: 'black',
+    textSectionTitleColor: 'white',
+    selectedDayBackgroundColor: '#9147FF',
+    selectedDayTextColor: 'white',
+    todayTextColor: '#9147FF',
+    dayTextColor: 'white',
+    textDisabledColor: 'gray',
+    dotColor: '#9147FF',
+    selectedDotColor: 'white',
+    arrowColor: 'white',
+    monthTextColor: 'white',
+    indicatorColor: '#9147FF',
+    textDayFontFamily: 'Montserrat-Black',
+    textMonthFontFamily: 'Montserrat-Black',
+    textDayHeaderFontFamily: 'Montserrat-Black',
+    textDayFontSize: 16,
+    textMonthFontSize: 20,
+    textDayHeaderFontSize: 14,
+  },
 });
+
 
 export default TwitchKalender;
 
