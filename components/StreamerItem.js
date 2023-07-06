@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import DefaultText from "../components/DefaultText";
+import DefaultText from "./DefaultText";
 
 export default toDoItem = (props) => {
   return (

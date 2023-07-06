@@ -10,36 +10,26 @@ import {
   Keyboard,
   Alert,
   Platform,
+  Image,
 } from "react-native";
 
 import DefaultText from "../components/DefaultText";
 import BgButton from "../components/BgButton";
-import ResultScreen from "./ResultScreen";
-import TwitchApi from "../api/twitchapi"
-
-
-
-
-
+import ResultScreen from "./SearchAndListScreen";
+import TwitchApi from "../api/twitchapi";
+import logoImage from "../assets/logo/images.png";
 
 export default MainScreen = (props) => {
   const { height } = useWindowDimensions();
-  const [change, SetChange] = useState(false)
+  const [change, SetChange] = useState(false);
 
-
- 
   const CancelModalHandler = () => {
     SetChange(false);
   };
 
-
-  const ChangeHandler =() =>{
+  const ChangeHandler = () => {
     SetChange(true);
-    
   };
-
-
-
 
   return (
     <View
@@ -58,8 +48,17 @@ export default MainScreen = (props) => {
           onLayout={props.onLayout}
         >
           <View style={[styles.topContainer, LayoutStyles.topContainer]}>
-            <DefaultText style={styles.titleText}> StreamTracker </DefaultText>
+            <DefaultText
+              style={height > 500 ? styles.titleText : styles.titleTextVertical}
+            >
+              {" "}
+              StreamTracker <Image
+                source={logoImage}
+                style={styles.logo}
+              />{" "}
+            </DefaultText>
           </View>
+
           <View
             style={
               height > 660
@@ -70,20 +69,11 @@ export default MainScreen = (props) => {
                   ]
             }
           >
-          
-          <TwitchApi/>
- 
+            <TwitchApi />
           </View>
-          <View style={[styles.bottomContainer, LayoutStyles.bottomContainer]}>
-            <BgButton
-              title="Add Streamer"
-              onClick={ChangeHandler}
-              
-            />
-            <ResultScreen
-              visible={change}
-              onCancelModal={CancelModalHandler}
-            />
+          <View style={[LayoutStyles.bottomContainer]}>
+            <BgButton title="Add Streamer" onClick={ChangeHandler} />
+            <ResultScreen visible={change} onCancelModal={CancelModalHandler} />
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -105,6 +95,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.lightBackground,
   },
+
   topContainer: {
     backgroundColor: Colors.accent,
   },
@@ -114,59 +105,18 @@ const styles = StyleSheet.create({
   },
 
   middleContainerHorizontal: {
-    backgroundColor: Colors.textColor,
+    backgroundColor: Colors.accent,
     alignItems: "center",
     flex: 4,
-    width: "100%"
-  
-  },
-
-  buttonVerticalContainer: {
-    flexDirection: "row",
-    alignContent: "center",
-    justifyContent: "space-between",
-    paddingVertical: 20,
-    width: "60%",
-    
-    
-    
-  },
-
-  bottomContainer: {
-    backgroundColor: Colors.accent,
-    
-  },
-  slider: {
     width: "100%",
-  },
-
-  SliderContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-    width: "100%",
-  },
-
-  input: {
-    marginTop: 15,
-    fontSize: 30,
-    color: Colors.primary,
-    fontFamily: "Montserrat-Black",
-    textAlign: "center",
-    width: "50%",
-  },
-
-  tipText: {
-    textAlign: "center",
   },
 
   titleText: {
-    paddingTop: 20,
     fontSize: 35,
-    color: Colors.textColor
-  
-  
+  },
+  titleTextVertical: {
+    fontSize: 20,
   },
 
-
+  logo: {},
 });

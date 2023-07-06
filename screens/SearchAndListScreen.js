@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Modal, useWindowDimensions, TextInput, ScrollView, TouchableOpacity, Keyboard, KeyboardAvoidingView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Modal,
+  useWindowDimensions,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+  Keyboard,
+  KeyboardAvoidingView,
+} from "react-native";
 import axios from "axios";
 import { SearchBar, Text } from "react-native-elements";
 
@@ -7,15 +17,12 @@ import Colors from "../constants/Colors";
 import LayoutStyles from "../constants/LayoutStyles";
 import BgButton from "../components/BgButton";
 import DefaultText from "../components/DefaultText";
-
-import ToDoItem from "../components/ToDoItem";
+import ToDoItem from "../components/StreamerItem";
 
 export const itemList = [];
 
 const ResultScreen = (props) => {
   const { height } = useWindowDimensions();
-
-  const scrollViewHeight = height - 200;
 
   const [searchText, setSearchText] = useState(""); // Zustandsvariable für die Sucheingabe
   const [items, setItems] = useState([]); // Zustandsvariable für die ToDo-Items
@@ -29,8 +36,6 @@ const ResultScreen = (props) => {
       setStreamerSuggestions([]);
     }
   }, [searchText]);
-
-
 
   const handleAddItem = () => {
     if (searchText.trim() !== "") {
@@ -104,19 +109,21 @@ const ResultScreen = (props) => {
     <Modal
       visible={props.visible}
       animationType="slide"
-      supportedOrientations={["portrait", "landscape"]}
+      // supportedOrientations={["portrait", "landscape"]}
     >
       <TouchableOpacity
         activeOpacity={1}
         onPress={dismissKeyboard}
         style={styles.middleContainer}
       >
-        <KeyboardAvoidingView
+        <View
           style={styles.contentContainer}
           behavior={Platform.OS === "ios" ? "padding" : null}
         >
-          <View style={styles.topContainer}>
-            <DefaultText style={styles.resultTitleText}>Search Streamer</DefaultText>
+          <KeyboardAvoidingView
+            style={[styles.topContainer, LayoutStyles.topContainer]}
+          >
+            <DefaultText style={styles.titleText}>Search Streamer</DefaultText>
             <View style={styles.searchContainer}>
               <SearchBar
                 placeholder="Enter streamer name"
@@ -125,22 +132,37 @@ const ResultScreen = (props) => {
                 containerStyle={styles.searchBarContainer}
                 inputContainerStyle={styles.searchBarInputContainer}
               />
-              <BgButton title="Add" onClick={handleAddItem}/>
+              <BgButton title="Add" onClick={handleAddItem} />
             </View>
+          </KeyboardAvoidingView>
+
+          <View style={styles.header}>
+            <DefaultText style={styles.listText}>Name </DefaultText>
+
+            <DefaultText style={styles.listText}>List</DefaultText>
           </View>
 
-          <View style={[styles.scrollViewContainer, { height: scrollViewHeight }]}>
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainerStyle}>
+          <View style={styles.scrollViewContainer}>
+            <View style={styles.listContainer}></View>
+            <ScrollView
+              style={styles.scrollView}
+              contentContainerStyle={styles.contentContainerStyle}
+            >
               {streamerSuggestions.map((suggestion) => (
                 <View key={suggestion}>
                   <TouchableOpacity onPress={() => setSearchText(suggestion)}>
-                  <DefaultText key={suggestion} style={styles.smallText}>{suggestion}</DefaultText>
+                    <DefaultText key={suggestion} style={styles.smallText}>
+                      {suggestion}
+                    </DefaultText>
                   </TouchableOpacity>
                 </View>
               ))}
             </ScrollView>
 
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainerStyle}>
+            <ScrollView
+              style={styles.scrollView}
+              contentContainerStyle={styles.contentContainerStyle}
+            >
               {items.map((item) => (
                 <ToDoItem
                   key={item.id}
@@ -150,13 +172,10 @@ const ResultScreen = (props) => {
               ))}
             </ScrollView>
           </View>
-
-          <View style={styles.bottomContainer}>
-            
+          <View style={[styles.bottomContainer, LayoutStyles.bottomContainer]}>
             <BgButton title={"Back"} onClick={props.onCancelModal} />
-        
           </View>
-        </KeyboardAvoidingView>
+        </View>
       </TouchableOpacity>
     </Modal>
   );
@@ -169,6 +188,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     marginRight: 5,
     marginLeft: 5,
   },
@@ -177,7 +197,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     borderTopWidth: 0,
     borderBottomWidth: 0,
-    
   },
   searchBarInputContainer: {
     backgroundColor: "lightgray",
@@ -186,40 +205,38 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 30,
     marginHorizontal: 10,
+    minHeight: 240,
   },
   scrollView: {
     flex: 1,
-    width: "49%",
+    width: "50%",
   },
-  topContainer: {
-    backgroundColor: Colors.accent,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+
   middleContainer: {
     flex: 1,
     backgroundColor: Colors.accent,
-    justifyContent: "center"
-  },
-  bottomContainer: {
-    backgroundColor: Colors.accent,
     justifyContent: "center",
-    alignItems: "center", 
-    marginBottom: 30,
   },
-  resultTitleText: {
+
+  titleText: {
     fontSize: 35,
-    marginTop: 80,
   },
-  smallText: { 
-    fontSize: 13,
+  smallText: {
+    fontSize: 15,
+    marginBottom: 5,
+    textAlign: "center",
+  },
+  listText: {
+    fontSize: 20,
+    marginBottom: 20,
+    textDecorationLine: "underline",
+  },
+
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
   },
 });
 
 export default ResultScreen;
-
-
-

@@ -1,28 +1,23 @@
-export default{
+import Colors from "../constants/Colors";
 
+export default {
+  topContainer: {
+    flex: 2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
-         topContainer: {
-        flex: 2,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 30,
-    
-      },
-    
-         middleContainer: {
-        flex: 4,
-        //alignItems: 'center',
-        padding: 30,
-        //width: "100%",
-        justifyContent: 'space-evenly'
-      },
-    
-          bottomContainer: {
-        flex: 2,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 30,
-      }    
+  middleContainer: {
+    flex: 4,
+    padding: 30,
+    justifyContent: "space-evenly",
+  },
 
-
-}
+  bottomContainer: {
+    backgroundColor: Colors.accent,
+    flex: 2,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    padding: 30,
+  },
+};

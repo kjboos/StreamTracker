@@ -4,9 +4,12 @@ import { View, Modal, Text, TouchableOpacity, StyleSheet, ScrollView, Button } f
 import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import axios from "axios";
 
-import { itemList } from "../screens/ResultScreen";
+import LayoutStyles from "../constants/LayoutStyles";
+import { itemList } from "../screens/SearchAndListScreen";
 import Colors from "../constants/Colors";
 import BgButton from "../components/BgButton";
+import DefaultText from "../components/DefaultText";
+
 
 // TwitchKalender component
 const TwitchKalender = () => {
@@ -160,7 +163,7 @@ const TwitchKalender = () => {
 
   const renderScheduleData = () => {
     if (scheduleData.length === 0) {
-      return <Text>Keine geplanten Stream-Zeiten</Text>;
+      return <DefaultText style={styles.infoMessage}>going empty...</DefaultText>;
     }
   
     const selectedScheduleData = scheduleData.filter((data) => {
@@ -172,7 +175,7 @@ const TwitchKalender = () => {
     });
   
     if (selectedScheduleData.length === 0) {
-      return <Text>Keine geplanten Stream-Zeiten an diesem Tag</Text>;
+      return <Text>No Stream Times</Text>;
     }
   
     return (
@@ -187,11 +190,11 @@ const TwitchKalender = () => {
               )
               .map((segment) => (
                 <View key={segment.id} style={styles.scheduleItem}>
-                  <Text style={styles.scheduleTitle}>{segment.title}</Text>
-                  <Text style={styles.scheduleTime}>
+                   <Text style={styles.scheduleTime}>
                     {segment.startTime.toLocaleTimeString()} -{" "}
                     {segment.endTime.toLocaleTimeString()}
                   </Text>
+                  <Text style={styles.scheduleTitle}>{segment.title}</Text>
                 </View>
               ))}
           </View>
@@ -230,15 +233,18 @@ const TwitchKalender = () => {
         }}
       />
 
-      <Modal visible={modalVisible} animationType="slide">
+<Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
-          
-          
-          <Text style={styles.sectionTitle}>Geplante Stream-Zeiten:</Text>
-          {renderScheduleData()}
+           <View style={[styles.topContainer, LayoutStyles.topContainer]}>
+            <DefaultText style={styles.titleText}> Stream Times </DefaultText>
+           </View>
 
-          <View style={styles.buttonContainer} >
-           <BgButton title="Schließen" onClick={handleCloseModal} />
+          <View style={styles.scrollViewContainer}>
+            {renderScheduleData()}
+          </View>
+
+          <View style={[styles.bottomContainer, LayoutStyles.bottomContainer]}>
+            <BgButton title="Back" onClick={handleCloseModal} />
           </View>
         </View>
       </Modal>
@@ -246,48 +252,54 @@ const TwitchKalender = () => {
   );
 };
 
-// Styles for the component
+// Styles für die Komponente
 const styles = StyleSheet.create({
+
   scrollViewContainer: {
     flex: 1,
-    width: "100%",
     paddingHorizontal: 20,
-    marginTop: 20, // Abstand nach oben anpassen
-    marginBottom: 20, // Abstand nach unten anpassen
+    minHeight: 240,
+    
   },
+
+  streamerContainer:{
+    marginBottom:15,
+  },
+
+  streamerName: {
+    fontFamily:"Montserrat-Black",
+    fontSize: 20,
+    color: Colors.textColor
+  },
+
+  scheduleTime:{
+    fontFamily:"Montserrat-Black",
+    color: Colors.textColor
+  },
+
+  scheduleTitle:{
+    fontFamily:"Montserrat-Black",
+    color: Colors.textColor
+  },  
+
+  
   modalContainer: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
     backgroundColor: Colors.accent,
-    flexDirection: "column", // Hinzufügen des flexDirection-Attributs
+    flexDirection: "column",
+    
   },
-  buttonContainer: {
-    marginBottom: 80,
+
+  titleText: {
+    fontSize: 35,
   },
-  customInfoText: {
-    fontSize: 24,
-    color: "red",
-    textAlign: "center",
-  },
-  streamerName:{
-    marginTop: 20,
-    color: Colors.textColor,
-    fontFamily: "Montserrat-Black",
-  },
-  scheduleTitle:{
-    color: Colors.textColor,
-    fontFamily: "Montserrat-Black",
-  },
-  scheduleTime:{
-    color: Colors.textColor,
-    fontFamily: "Montserrat-Black",
-  },
-  sectionTitle:{
-    marginTop: 50,
-    color: Colors.textColor,
-    fontFamily: "Montserrat-Black",
+
+  infoMessage: {
+    alignSelf: "center"
   }
+
+  
 });
 
 export default TwitchKalender;
