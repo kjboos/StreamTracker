@@ -234,7 +234,7 @@ const TwitchKalender = () => {
   // Render the TwitchKalender component
   return (
     <View>
-      <Calendar
+      <Calendar 
         markedDates={markedDates}
         onDayPress={handleDayPress}
         theme={{
@@ -258,6 +258,7 @@ const TwitchKalender = () => {
           textMonthFontSize: 20,
           textDayHeaderFontSize: 14,
         }}
+        style={styles.calendar}
       />
 
       <Modal visible={modalVisible} animationType="slide">
@@ -287,6 +288,9 @@ const styles = StyleSheet.create({
 
   streamerContainer: {
     marginBottom: 15,
+  },
+  calendar:{
+    borderRadius: 5,
   },
 
   streamerName: {
