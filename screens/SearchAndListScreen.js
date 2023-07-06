@@ -116,12 +116,12 @@ const ResultScreen = (props) => {
         onPress={dismissKeyboard}
         style={styles.middleContainer}
       >
-        <View
-          style={styles.contentContainer}
-          behavior={Platform.OS === "ios" ? "padding" : null}
+        <KeyboardAvoidingView
+          style={[styles.topContainer, LayoutStyles.topContainer]}
         >
-          <KeyboardAvoidingView
-            style={[styles.topContainer, LayoutStyles.topContainer]}
+          <View
+            style={styles.contentContainer}
+            behavior={Platform.OS === "ios" ? "padding" : null}
           >
             <DefaultText style={styles.titleText}>Search Streamer</DefaultText>
             <View style={styles.searchContainer}>
@@ -134,48 +134,50 @@ const ResultScreen = (props) => {
               />
               <BgButton title="Add" onClick={handleAddItem} />
             </View>
-          </KeyboardAvoidingView>
 
-          <View style={styles.header}>
-            <DefaultText style={styles.listText}>Name </DefaultText>
+            <View style={styles.header}>
+              <DefaultText style={styles.listText}>Name </DefaultText>
 
-            <DefaultText style={styles.listText}>List</DefaultText>
-          </View>
+              <DefaultText style={styles.listText}>List</DefaultText>
+            </View>
 
-          <View style={styles.scrollViewContainer}>
-            <View style={styles.listContainer}></View>
-            <ScrollView
-              style={styles.scrollView}
-              contentContainerStyle={styles.contentContainerStyle}
+            <View style={styles.scrollViewContainer}>
+              <View style={styles.listContainer}></View>
+              <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.contentContainerStyle}
+              >
+                {streamerSuggestions.map((suggestion) => (
+                  <View key={suggestion}>
+                    <TouchableOpacity onPress={() => setSearchText(suggestion)}>
+                      <DefaultText key={suggestion} style={styles.smallText}>
+                        {suggestion}
+                      </DefaultText>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </ScrollView>
+
+              <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.contentContainerStyle}
+              >
+                {items.map((item) => (
+                  <ToDoItem
+                    key={item.id}
+                    title={item.title}
+                    onDelete={() => handleDeleteItem(item.title)}
+                  />
+                ))}
+              </ScrollView>
+            </View>
+            <View
+              style={[styles.bottomContainer, LayoutStyles.bottomContainer]}
             >
-              {streamerSuggestions.map((suggestion) => (
-                <View key={suggestion}>
-                  <TouchableOpacity onPress={() => setSearchText(suggestion)}>
-                    <DefaultText key={suggestion} style={styles.smallText}>
-                      {suggestion}
-                    </DefaultText>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </ScrollView>
-
-            <ScrollView
-              style={styles.scrollView}
-              contentContainerStyle={styles.contentContainerStyle}
-            >
-              {items.map((item) => (
-                <ToDoItem
-                  key={item.id}
-                  title={item.title}
-                  onDelete={() => handleDeleteItem(item.title)}
-                />
-              ))}
-            </ScrollView>
+              <BgButton title={"Back"} onClick={props.onCancelModal} />
+            </View>
           </View>
-          <View style={[styles.bottomContainer, LayoutStyles.bottomContainer]}>
-            <BgButton title={"Back"} onClick={props.onCancelModal} />
-          </View>
-        </View>
+        </KeyboardAvoidingView>
       </TouchableOpacity>
     </Modal>
   );
@@ -206,7 +208,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginHorizontal: 10,
-    minHeight: 240,
+    minHeight: 300,
   },
   scrollView: {
     flex: 1,
@@ -221,6 +223,7 @@ const styles = StyleSheet.create({
 
   titleText: {
     fontSize: 35,
+    marginTop: 75,
   },
   smallText: {
     fontSize: 15,

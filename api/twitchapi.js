@@ -1,6 +1,16 @@
 // Importing required dependencies
 import React, { useEffect, useState } from "react";
-import { View, Modal, Text, TouchableOpacity, StyleSheet, ScrollView, Button } from "react-native";
+import {
+  View,
+  Modal,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Button,
+  Linking,
+  Image,
+} from "react-native";
 import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import axios from "axios";
 
@@ -9,7 +19,7 @@ import { itemList } from "../screens/SearchAndListScreen";
 import Colors from "../constants/Colors";
 import BgButton from "../components/BgButton";
 import DefaultText from "../components/DefaultText";
-
+import dotImage from "../assets/logo/redDot.png";
 
 // TwitchKalender component
 const TwitchKalender = () => {
@@ -19,6 +29,11 @@ const TwitchKalender = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [markedDates, setMarkedDates] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
+
+  const openTwitchStreamerPage = (streamerName) => {
+    const url = `https://www.twitch.tv/${streamerName}`;
+    Linking.openURL(url);
+  };
 
   // useEffect hook to fetch data
   useEffect(() => {
@@ -50,7 +65,7 @@ const TwitchKalender = () => {
     const fetchScheduleData = async (accessToken) => {
       try {
         const scheduleData = [];
-    
+
         for (const streamerName of followedStreamers) {
           try {
             const userDataResponse = await axios.get(
@@ -62,9 +77,9 @@ const TwitchKalender = () => {
                 },
               }
             );
-    
+
             const userId = userDataResponse.data.data[0].id;
-    
+
             const scheduleResponse = await axios.get(
               `https://api.twitch.tv/helix/schedule?broadcaster_id=${userId}`,
               {
@@ -74,9 +89,9 @@ const TwitchKalender = () => {
                 },
               }
             );
-    
+
             const scheduleDataResponse = scheduleResponse.data.data;
-    
+
             if (typeof scheduleDataResponse === "object") {
               const segments = scheduleDataResponse.segments.map((segment) => ({
                 id: segment.id,
@@ -85,26 +100,31 @@ const TwitchKalender = () => {
                 title: segment.title,
                 isRecurring: segment.is_recurring,
               }));
-    
+
               scheduleData.push({
                 streamerName: streamerName,
                 segments: segments,
               });
             }
           } catch (error) {
-            console.log(`Fehler beim Abrufen der Schedule-Daten für Streamer ${streamerName}:`, error);
+            console.log(
+              `Fehler beim Abrufen der Schedule-Daten für Streamer ${streamerName}:`,
+              error
+            );
           }
         }
-    
+
         const updatedMarkedDates = {};
-    
+
         scheduleData.forEach(({ streamerName, segments }) => {
           segments.forEach((segment) => {
             const dateString = segment.startTime.toISOString().split("T")[0];
             const markedDate = markedDates[dateString];
-    
+
             if (markedDate) {
-              if (!markedDate.customInfo.includes(`Streamer: ${streamerName}`)) {
+              if (
+                !markedDate.customInfo.includes(`Streamer: ${streamerName}`)
+              ) {
                 markedDate.customInfo.push(`Streamer: ${streamerName}`);
               }
             } else {
@@ -115,14 +135,14 @@ const TwitchKalender = () => {
             }
           });
         });
-    
+
         // Remove marked dates for items that are not in the item list
         Object.keys(markedDates).forEach((dateString) => {
           if (!updatedMarkedDates[dateString]) {
             delete markedDates[dateString];
           }
         });
-    
+
         setScheduleData(scheduleData);
         setMarkedDates(updatedMarkedDates);
       } catch (error) {
@@ -130,12 +150,11 @@ const TwitchKalender = () => {
       }
     };
 
-   
     // Function to fetch data
     const fetchData = async () => {
       const accessToken = await fetchAccessToken();
       await Promise.all([
-      //  fetchStreamEvents(accessToken),
+        //  fetchStreamEvents(accessToken),
         fetchScheduleData(accessToken),
       ]);
     };
@@ -160,12 +179,13 @@ const TwitchKalender = () => {
     setModalVisible(false);
   };
 
-
   const renderScheduleData = () => {
     if (scheduleData.length === 0) {
-      return <DefaultText style={styles.infoMessage}>going empty...</DefaultText>;
+      return (
+        <DefaultText style={styles.infoMessage}>going empty...</DefaultText>
+      );
     }
-  
+
     const selectedScheduleData = scheduleData.filter((data) => {
       const hasScheduledTimes = data.segments.some(
         (segment) =>
@@ -173,11 +193,13 @@ const TwitchKalender = () => {
       );
       return hasScheduledTimes;
     });
-  
+
     if (selectedScheduleData.length === 0) {
-      return <DefaultText style={styles.infoMessage}>going empty...</DefaultText>;
+      return (
+        <DefaultText style={styles.infoMessage}>going empty...</DefaultText>
+      );
     }
-  
+
     return (
       <ScrollView style={styles.scrollView}>
         {selectedScheduleData.map((data) => (
@@ -190,11 +212,17 @@ const TwitchKalender = () => {
               )
               .map((segment) => (
                 <View key={segment.id} style={styles.scheduleItem}>
-                   <Text style={styles.scheduleTime}>
+                  <Text style={styles.scheduleTime}>
                     {segment.startTime.toLocaleTimeString()} -{" "}
                     {segment.endTime.toLocaleTimeString()}
                   </Text>
                   <Text style={styles.scheduleTitle}>{segment.title}</Text>
+                  <TouchableOpacity onPress={() => openTwitchStreamerPage(data.streamerName)}>
+              <Text style={styles.Link}> <Image
+                source={dotImage}
+                style={styles.dot}
+              />  &gt;&gt;Watch {data.streamerName}&lt;&lt;</Text>
+            </TouchableOpacity>
                 </View>
               ))}
           </View>
@@ -206,7 +234,7 @@ const TwitchKalender = () => {
   // Render the TwitchKalender component
   return (
     <View>
-     <Calendar
+      <Calendar
         markedDates={markedDates}
         onDayPress={handleDayPress}
         theme={{
@@ -229,19 +257,16 @@ const TwitchKalender = () => {
           textDayFontSize: 16,
           textMonthFontSize: 20,
           textDayHeaderFontSize: 14,
-          
         }}
       />
 
-<Modal visible={modalVisible} animationType="slide">
+      <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
-           <View style={[styles.topContainer, LayoutStyles.topContainer]}>
+          <View style={[styles.topContainer, LayoutStyles.topContainer]}>
             <DefaultText style={styles.titleText}> Stream Times </DefaultText>
-           </View>
-
-          <View style={styles.scrollViewContainer}>
-            {renderScheduleData()}
           </View>
+
+          <View style={styles.scrollViewContainer}>{renderScheduleData()}</View>
 
           <View style={[styles.bottomContainer, LayoutStyles.bottomContainer]}>
             <BgButton title="Back" onClick={handleCloseModal} />
@@ -254,41 +279,41 @@ const TwitchKalender = () => {
 
 // Styles für die Komponente
 const styles = StyleSheet.create({
-
   scrollViewContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    minHeight: 240,
-    
+    minHeight: 300,
   },
 
-  streamerContainer:{
-    marginBottom:15,
+  streamerContainer: {
+    marginBottom: 15,
   },
 
   streamerName: {
-    fontFamily:"Montserrat-Black",
+    fontFamily: "Montserrat-Black",
     fontSize: 20,
-    color: Colors.textColor
+    color: Colors.textColor,
   },
 
-  scheduleTime:{
-    fontFamily:"Montserrat-Black",
-    color: Colors.textColor
+  scheduleTime: {
+    fontFamily: "Montserrat-Black",
+    color: Colors.textColor,
   },
 
-  scheduleTitle:{
-    fontFamily:"Montserrat-Black",
-    color: Colors.textColor
-  },  
-
-  
+  scheduleTitle: {
+    fontFamily: "Montserrat-Black",
+    color: Colors.textColor,
+  },
+  Link:{
+    fontFamily: "Montserrat-Black",
+    color: Colors.primary,
+    //textDecorationLine: "underline",
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     backgroundColor: Colors.accent,
     flexDirection: "column",
-    
   },
 
   titleText: {
@@ -296,10 +321,14 @@ const styles = StyleSheet.create({
   },
 
   infoMessage: {
-    alignSelf: "center"
+    alignSelf: "center",
+  },
+
+  dot: {
+    height: 10,
+    width: 10,
   }
 
-  
 });
 
 export default TwitchKalender;
