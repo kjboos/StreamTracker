@@ -175,7 +175,7 @@ const TwitchKalender = () => {
     });
   
     if (selectedScheduleData.length === 0) {
-      return <Text>No Stream Times</Text>;
+      return <DefaultText style={styles.infoMessage}>going empty...</DefaultText>;
     }
   
     return (
