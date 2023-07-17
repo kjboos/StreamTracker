@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Text,
   View,
   TouchableOpacity,
   TouchableNativeFeedback,
@@ -10,9 +9,11 @@ import {
 import Colors from "../constants/Colors";
 import DefaultText from "./DefaultText";
 
+// BgButton-Komponente
 export default BgButton = (props) => {
   let ButtonComponent = TouchableOpacity;
 
+  // Überprüfen der Plattform und Version für den richtigen Button-Komponenten-Typ
   if (Platform.OS === "android" && Platform.Version >= 21) {
     ButtonComponent = TouchableNativeFeedback;
   }
@@ -26,6 +27,7 @@ export default BgButton = (props) => {
   );
 };
 
+// Styles für die Komponente
 const styles = StyleSheet.create({
   button: {
     backgroundColor: Colors.lightBackground,
@@ -44,6 +46,5 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color: Colors.textColor,
-    
   },
 });

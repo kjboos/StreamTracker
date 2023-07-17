@@ -3,12 +3,10 @@ import Colors from "../constants/Colors";
 import LayoutStyles from "../constants/LayoutStyles";
 import {
   StyleSheet,
-  TextInput,
   View,
   useWindowDimensions,
   TouchableWithoutFeedback,
   Keyboard,
-  Alert,
   Platform,
   Image,
 } from "react-native";
@@ -19,14 +17,16 @@ import ResultScreen from "./SearchAndListScreen";
 import TwitchApi from "../api/twitchapi";
 import logoImage from "../assets/logo/images.png";
 
-export default MainScreen = (props) => {
+const MainScreen = (props) => {
   const { height } = useWindowDimensions();
   const [change, SetChange] = useState(false);
 
+  // Handler-Funktion, um das Modalfenster zu schließen
   const CancelModalHandler = () => {
     SetChange(false);
   };
 
+  // Handler-Funktion, um das Modalfenster zu öffnen
   const ChangeHandler = () => {
     SetChange(true);
   };
@@ -47,18 +47,20 @@ export default MainScreen = (props) => {
           style={height > 500 ? styles.screenVertical : styles.screenHorizontal}
           onLayout={props.onLayout}
         >
+          {/* Oberer Container */}
           <View style={[styles.topContainer, LayoutStyles.topContainer]}>
             <DefaultText
               style={height > 500 ? styles.titleText : styles.titleTextVertical}
             >
-              {" "}
-              StreamTracker <Image
+              StreamTracker
+              <Image
                 source={logoImage}
                 style={styles.logo}
-              />{" "}
+              />
             </DefaultText>
           </View>
 
+          {/* Mittlerer Container */}
           <View
             style={
               height > 660
@@ -69,10 +71,16 @@ export default MainScreen = (props) => {
                   ]
             }
           >
+            {/* TwitchApi-Komponente */}
             <TwitchApi />
           </View>
+
+          {/* Unterer Container */}
           <View style={[LayoutStyles.bottomContainer]}>
+            {/* Button zum Hinzufügen eines Streamers */}
             <BgButton title="Add Streamer" onClick={ChangeHandler} />
+
+            {/* Modalfenster */}
             <ResultScreen visible={change} onCancelModal={CancelModalHandler} />
           </View>
         </View>
@@ -120,3 +128,5 @@ const styles = StyleSheet.create({
 
   logo: {},
 });
+
+export default MainScreen;

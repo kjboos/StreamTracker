@@ -1,4 +1,3 @@
-// Importing required dependencies
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -7,11 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Button,
   Linking,
   Image,
 } from "react-native";
-import { Calendar, CalendarList, Agenda } from "react-native-calendars";
+import { Calendar } from "react-native-calendars";
 import axios from "axios";
 
 import LayoutStyles from "../constants/LayoutStyles";
@@ -24,25 +22,25 @@ import dotImage from "../assets/logo/redDot.png";
 // TwitchKalender component
 const TwitchKalender = () => {
   // State variables
-  const [streamEvents, setStreamEvents] = useState([]);
-  const [scheduleData, setScheduleData] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [markedDates, setMarkedDates] = useState({});
-  const [modalVisible, setModalVisible] = useState(false);
+  const [scheduleData, setScheduleData] = useState([]); // Array der Schedule-Daten
+  const [selectedDate, setSelectedDate] = useState(null); // Ausgewähltes Datum im Kalender
+  const [markedDates, setMarkedDates] = useState({}); // Markierte Daten im Kalender
+  const [modalVisible, setModalVisible] = useState(false); // Sichtbarkeit des Modals
 
+  // Funktion, um die Twitch-Seite des Streamers zu öffnen
   const openTwitchStreamerPage = (streamerName) => {
     const url = `https://www.twitch.tv/${streamerName}`;
     Linking.openURL(url);
   };
 
-  // useEffect hook to fetch data
+  // useEffect-Hook zum Abrufen der Daten
   useEffect(() => {
-    // Twitch API credentials
+    // Twitch API-Zugangsdaten
     const clientId = "crf1v3ic5vgntpcjf3ieh7sn2cpnt4";
     const clientSecret = "36lirbgnv4z09wg1fe0vrnn86m96g7";
     const followedStreamers = itemList;
 
-    // Function to fetch access token
+    // Funktion zum Abrufen des Zugangstokens
     const fetchAccessToken = async () => {
       try {
         const response = await axios.post(
@@ -62,12 +60,15 @@ const TwitchKalender = () => {
       }
     };
 
+    // Funktion zum Abrufen der Schedule-Daten
     const fetchScheduleData = async (accessToken) => {
       try {
         const scheduleData = [];
 
+        // Durchlaufen der Liste der verfolgten Streamer
         for (const streamerName of followedStreamers) {
           try {
+            // Abrufen der Nutzerdaten für den Streamer
             const userDataResponse = await axios.get(
               `https://api.twitch.tv/helix/users?login=${streamerName}`,
               {
@@ -80,6 +81,7 @@ const TwitchKalender = () => {
 
             const userId = userDataResponse.data.data[0].id;
 
+            // Abrufen der Schedule-Daten für den Streamer
             const scheduleResponse = await axios.get(
               `https://api.twitch.tv/helix/schedule?broadcaster_id=${userId}`,
               {
@@ -92,7 +94,9 @@ const TwitchKalender = () => {
 
             const scheduleDataResponse = scheduleResponse.data.data;
 
+            // Überprüfen, ob Schedule-Daten vorhanden sind
             if (typeof scheduleDataResponse === "object") {
+              // Konvertieren der Segmentdaten in das gewünschte Format
               const segments = scheduleDataResponse.segments.map((segment) => ({
                 id: segment.id,
                 startTime: new Date(segment.start_time),
@@ -101,6 +105,7 @@ const TwitchKalender = () => {
                 isRecurring: segment.is_recurring,
               }));
 
+              // Hinzufügen der Schedule-Daten für den Streamer zum Schedule-Array
               scheduleData.push({
                 streamerName: streamerName,
                 segments: segments,
@@ -116,6 +121,7 @@ const TwitchKalender = () => {
 
         const updatedMarkedDates = {};
 
+        // Erstellen der markierten Daten für den Kalender
         scheduleData.forEach(({ streamerName, segments }) => {
           segments.forEach((segment) => {
             const dateString = segment.startTime.toISOString().split("T")[0];
@@ -136,7 +142,7 @@ const TwitchKalender = () => {
           });
         });
 
-        // Remove marked dates for items that are not in the item list
+        // Entfernen der markierten Daten für Einträge, die nicht in der Item-Liste enthalten sind
         Object.keys(markedDates).forEach((dateString) => {
           if (!updatedMarkedDates[dateString]) {
             delete markedDates[dateString];
@@ -150,35 +156,36 @@ const TwitchKalender = () => {
       }
     };
 
-    // Function to fetch data
+    // Funktion zum Abrufen der Daten
     const fetchData = async () => {
       const accessToken = await fetchAccessToken();
       await Promise.all([
-        //  fetchStreamEvents(accessToken),
+        // fetchStreamEvents(accessToken),
         fetchScheduleData(accessToken),
       ]);
     };
 
     fetchData();
 
-    // Refresh data every second
+    // Daten alle Sekunde aktualisieren
     const interval = setInterval(fetchData, 1000);
 
-    // Clean up interval on component unmount
+    // Interval bereinigen, wenn die Komponente unmountet wird
     return () => clearInterval(interval);
   }, []);
 
-  // Event handler for day press on the calendar
+  // Event-Handler für das Drücken eines Tages im Kalender
   const handleDayPress = (date) => {
     setSelectedDate(date.dateString);
     setModalVisible(true);
   };
 
-  // Event handler for closing the modal
+  // Event-Handler zum Schließen des Modals
   const handleCloseModal = () => {
     setModalVisible(false);
   };
 
+  // Funktion zum Rendern der Schedule-Daten
   const renderScheduleData = () => {
     if (scheduleData.length === 0) {
       return (
@@ -218,11 +225,14 @@ const TwitchKalender = () => {
                   </Text>
                   <Text style={styles.scheduleTitle}>{segment.title}</Text>
                   <TouchableOpacity onPress={() => openTwitchStreamerPage(data.streamerName)}>
-              <Text style={styles.Link}> <Image
-                source={dotImage}
-                style={styles.dot}
-              />  &gt;&gt;Watch {data.streamerName}&lt;&lt;</Text>
-            </TouchableOpacity>
+                    <Text style={styles.Link}>
+                      <Image
+                        source={dotImage}
+                        style={styles.dot}
+                      /> 
+                      &gt;&gt;Watch {data.streamerName}&lt;&lt;
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               ))}
           </View>
@@ -231,7 +241,7 @@ const TwitchKalender = () => {
     );
   };
 
-  // Render the TwitchKalender component
+  // TwitchKalender-Komponente rendern
   return (
     <View>
       <Calendar 

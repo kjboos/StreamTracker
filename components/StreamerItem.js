@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import DefaultText from "./DefaultText";
 
+
 export default toDoItem = (props) => {
   return (
     <TouchableOpacity
@@ -16,6 +17,7 @@ export default toDoItem = (props) => {
   );
 };
 
+// Styles für die Komponente
 const styles = StyleSheet.create({
   itemContainer: {
     alignItems: "center",

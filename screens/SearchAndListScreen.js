@@ -4,14 +4,13 @@ import {
   StyleSheet,
   Modal,
   useWindowDimensions,
-  TextInput,
   ScrollView,
   TouchableOpacity,
   Keyboard,
   KeyboardAvoidingView,
 } from "react-native";
 import axios from "axios";
-import { SearchBar, Text } from "react-native-elements";
+import { SearchBar } from "react-native-elements";
 
 import Colors from "../constants/Colors";
 import LayoutStyles from "../constants/LayoutStyles";
@@ -24,12 +23,14 @@ export const itemList = [];
 const ResultScreen = (props) => {
   const { height } = useWindowDimensions();
 
+  // Zustandsvariablen
   const [searchText, setSearchText] = useState(""); // Zustandsvariable für die Sucheingabe
   const [items, setItems] = useState([]); // Zustandsvariable für die ToDo-Items
   const [streamerSuggestions, setStreamerSuggestions] = useState([]); // Zustandsvariable für die Streamer-Vorschläge
   const [streamers, setStreamers] = useState([]); // Zustandsvariable für die vorgeschlagenen Streamer
 
   useEffect(() => {
+    // Effekt für die Aktualisierung der Streamer-Vorschläge basierend auf der Sucheingabe
     if (searchText.trim() !== "") {
       fetchStreamerSuggestions(searchText);
     } else {
@@ -37,12 +38,18 @@ const ResultScreen = (props) => {
     }
   }, [searchText]);
 
+  // Funktion zum Hinzufügen eines Items
   const handleAddItem = () => {
     if (searchText.trim() !== "") {
+      // Erstellen eines neuen Items
       const newItem = { id: Math.random().toString(), title: searchText };
+      // Aktualisieren der Liste der Items
       setItems((prevItems) => [...prevItems, newItem]);
+      // Zurücksetzen der Sucheingabe
       setSearchText("");
+      // Hinzufügen des neuen Items zur itemList
       itemList.push(newItem.title);
+      // Aktualisieren der Liste der vorgeschlagenen Streamer
       setStreamers((prevStreamers) =>
         prevStreamers.filter((streamer) => streamer.login !== searchText)
       );
@@ -50,18 +57,24 @@ const ResultScreen = (props) => {
     console.log(itemList);
   };
 
+  // Funktion zum Löschen eines Items
   const handleDeleteItem = (title) => {
+    // Filtern und Aktualisieren der Liste der Items
     setItems((prevItems) => prevItems.filter((item) => item.title !== title));
+    // Entfernen des Items aus der itemList
     itemList.splice(
       itemList.findIndex((item) => item === title),
       1
-    ); // Entferne den Titel aus der itemList
+    );
     console.log(itemList);
   };
 
+  // Funktion zum Abrufen von Streamer-Vorschlägen basierend auf der Sucheingabe
   const fetchStreamerSuggestions = async (text) => {
     try {
+      // Abrufen des Authorization-Tokens
       const authorizationToken = await getAuthorizationToken();
+      // API-Aufruf für die Streamer-Suche
       const response = await axios.get(
         `https://api.twitch.tv/helix/search/channels?query=${text}`,
         {
@@ -72,15 +85,19 @@ const ResultScreen = (props) => {
         }
       );
       const { data } = response;
+      // Extrahieren der Streamer-Vorschläge aus der API-Antwort
       const suggestions = data.data.map((channel) => channel.display_name);
+      // Aktualisieren der Streamer-Vorschläge
       setStreamerSuggestions(suggestions);
     } catch (error) {
       console.error("Fehler beim Abrufen der Streamer-Vorschläge:", error);
     }
   };
 
+  // Funktion zum Abrufen des Authorization-Tokens
   const getAuthorizationToken = async () => {
     try {
+      // API-Aufruf zum Erhalten des Authorization-Tokens
       const response = await axios.post(
         "https://id.twitch.tv/oauth2/token",
         null,
@@ -93,6 +110,7 @@ const ResultScreen = (props) => {
         }
       );
       const { data } = response;
+      // Extrahieren des Authorization-Tokens aus der API-Antwort
       const authorizationToken = data.access_token;
       return authorizationToken;
     } catch (error) {
@@ -101,6 +119,7 @@ const ResultScreen = (props) => {
     }
   };
 
+  // Funktion zum Schließen der Tastatur
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
@@ -123,22 +142,22 @@ const ResultScreen = (props) => {
             style={styles.contentContainer}
             behavior={Platform.OS === "ios" ? "padding" : null}
           >
-            <DefaultText style={styles.titleText}>Search Streamer</DefaultText>
+            <DefaultText style={styles.titleText}>Suche Streamer</DefaultText>
             <View style={styles.searchContainer}>
               <SearchBar
-                placeholder="Enter streamer name"
+                placeholder="Streamername eingeben"
                 onChangeText={(text) => setSearchText(text)}
                 value={searchText}
                 containerStyle={styles.searchBarContainer}
                 inputContainerStyle={styles.searchBarInputContainer}
               />
-              <BgButton title="Add" onClick={handleAddItem} />
+              <BgButton title="Hinzufügen" onClick={handleAddItem} />
             </View>
 
             <View style={styles.header}>
-              <DefaultText style={styles.listText}>Name </DefaultText>
+              <DefaultText style={styles.listText}>Name</DefaultText>
 
-              <DefaultText style={styles.listText}>List</DefaultText>
+              <DefaultText style={styles.listText}>Liste</DefaultText>
             </View>
 
             <View style={styles.scrollViewContainer}>
@@ -174,7 +193,7 @@ const ResultScreen = (props) => {
             <View
               style={[styles.bottomContainer, LayoutStyles.bottomContainer]}
             >
-              <BgButton title={"Back"} onClick={props.onCancelModal} />
+              <BgButton title={"Zurück"} onClick={props.onCancelModal} />
             </View>
           </View>
         </KeyboardAvoidingView>
