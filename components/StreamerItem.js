@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import DefaultText from "./DefaultText";
 
 
-export default toDoItem = (props) => {
+export default StreamerItem = (props) => {
   return (
     <TouchableOpacity
       onLongPress={() => {

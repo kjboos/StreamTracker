@@ -145,13 +145,13 @@ const ResultScreen = (props) => {
             <DefaultText style={styles.titleText}>Suche Streamer</DefaultText>
             <View style={styles.searchContainer}>
               <SearchBar
-                placeholder="Streamername eingeben"
+                placeholder="Enter streamer name"
                 onChangeText={(text) => setSearchText(text)}
                 value={searchText}
                 containerStyle={styles.searchBarContainer}
                 inputContainerStyle={styles.searchBarInputContainer}
               />
-              <BgButton title="Hinzufügen" onClick={handleAddItem} />
+              <BgButton title="Add" onClick={handleAddItem} />
             </View>
 
             <View style={styles.header}>
@@ -193,7 +193,7 @@ const ResultScreen = (props) => {
             <View
               style={[styles.bottomContainer, LayoutStyles.bottomContainer]}
             >
-              <BgButton title={"Zurück"} onClick={props.onCancelModal} />
+              <BgButton title={"Back"} onClick={props.onCancelModal} />
             </View>
           </View>
         </KeyboardAvoidingView>
